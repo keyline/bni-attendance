@@ -21,7 +21,7 @@ Route::match(['get', 'post'], '/', [MemberController::class, 'signIn'])->name('s
 Route::match(['get', 'post'], '/user-signin', [MemberController::class, 'userSignIn'])->name('user-signin');
 Route::match(['get', 'post'], '/admin-listing', [MemberController::class, 'listing'])->name('admin-listing');
 Route::match(['get', 'post'], '/user-listing', [MemberController::class, 'userProfile'])->name('user-listing');
-Route::match(['get', 'post'], '/members/add/{club_id}/{member_id?}', [MemberController::class, 'add'])->name('members.add');
+Route::match(['get', 'post'], '/members/add/{club_id?}/{member_id?}', [MemberController::class, 'add'])->name('members.add');
 Route::match(['get', 'post'], '/members/logout', [MemberController::class, 'logout'])->name('member.logout');
 
 //atteding routes

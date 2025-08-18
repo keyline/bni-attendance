@@ -5,11 +5,49 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\Helper;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon; 
 
 class MemberController extends Controller
 {
     // SIGN IN METHOD
+    // public function signIn(Request $request)
+    // {
+    //     if ($request->isMethod('post')) {
+    //         // Validate input
+    //         $data = $request->validate([
+    //             'phoneOrEmail' => 'required|string',
+    //             'password'     => 'required|string',
+    //         ]);
+
+    //         // Find user by phone OR email + password (plain text)
+    //         $user = DB::table('member')
+    //             ->where(function ($query) use ($data) {
+    //                 $query->where('phone', $data['phoneOrEmail'])
+    //                       ->orWhere('email', $data['phoneOrEmail']);
+    //             })
+    //             ->where('password', $data['password'])
+    //             ->first();
+
+    //         if ($user) {
+    //             // Store in session
+    //             session(['user' => $user]);
+
+    //             // Redirect based on role
+    //             if ($user->member_type == 2) {
+    //         return back()->withErrors(['You must be an admin.']);
+    //             } else {
+    //                 return redirect()->route('admin-listing');
+    //             }
+    //         }
+
+    //         return back()->withErrors(['phoneOrEmail' => 'Invalid credentials']);
+    //     }
+
+    //     return view('signIn');
+    // }
+
+    // Sign in
     public function signIn(Request $request)
     {
         if ($request->isMethod('post')) {
@@ -19,32 +57,33 @@ class MemberController extends Controller
                 'password'     => 'required|string',
             ]);
 
-            // Find user by phone OR email + password (plain text)
+            // Find user by phone OR email (don't check password here)
             $user = DB::table('member')
-                ->where(function ($query) use ($data) {
-                    $query->where('phone', $data['phoneOrEmail'])
-                          ->orWhere('email', $data['phoneOrEmail']);
-                })
-                ->where('password', $data['password'])
+                ->where('phone', $data['phoneOrEmail'])
+                ->orWhere('email', $data['phoneOrEmail'])
                 ->first();
 
-            if ($user) {
+            if ($user && Hash::check($data['password'], $user->password)) {
+                //  Password matched
+
                 // Store in session
                 session(['user' => $user]);
 
                 // Redirect based on role
                 if ($user->member_type == 2) {
-            return back()->withErrors(['You must be an admin.']);
+                    return back()->withErrors(['You must be an admin.']);
                 } else {
                     return redirect()->route('admin-listing');
                 }
             }
 
+            //  If user not found or password mismatch
             return back()->withErrors(['phoneOrEmail' => 'Invalid credentials']);
         }
 
         return view('signIn');
     }
+
 
     // ADMIN LISTING
     public function listing(Request $request)
@@ -83,7 +122,7 @@ class MemberController extends Controller
     }
 
     // ADD MEMBER (ADMIN ONLY)
-    public function add(Request $request, $club_id, $member_id = null)
+    public function add(Request $request, $club_id = null, $member_id = null)
     { try{
         $admin = session('user');
         $member = DB::table('member')->where('id', $member_id)->first();      

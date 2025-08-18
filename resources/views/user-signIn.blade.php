@@ -19,7 +19,6 @@
     {{-- Error Messages --}}
     @if ($errors->any())
         <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-            <strong>Please fix the following errors:</strong>
             <ul class="mt-2 mb-0 ps-3">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
