@@ -204,9 +204,10 @@ class MemberController extends Controller
                 $meeting = DB::table('club')->where('id', '=', $user->club_id)->first();
                        if($meeting->meeting_day == date('l')) {
                             $alreadyExists = DB::table('attendance')
-                            ->where('member_id', $user->id)
-                            ->where('date', date('Y-m-d'))
-                            ->exists();
+                                ->where('member_id', $user->id)
+                                ->where('date', date('Y-m-d')) // exact match, works since it's DATE
+                                ->exists();
+
 
                         if ($alreadyExists) {
                             return back()->withErrors(['You have already marked attendance today.']);
@@ -214,6 +215,8 @@ class MemberController extends Controller
                      $items = [
                          'member_id' => $user->id,
                          'club_id' => $user->club_id,
+                         'date'      => date('Y-m-d'),   // fills the DATE column
+                         'time'      => date('H:i:s'),   // fills the TIME column
                      ];
                      DB::table('attendance')->insert($items);
 
