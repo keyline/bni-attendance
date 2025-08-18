@@ -230,7 +230,7 @@ class MemberController extends Controller
                     }
 
             }
-            return back()->withErrors(['You are not member of any club.']);
+            return back()->withErrors(['Error!! Please call admin.']);
         }
         return view('user-signIn');
       
