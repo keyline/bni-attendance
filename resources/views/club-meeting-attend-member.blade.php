@@ -109,8 +109,8 @@
     <tbody>
         @php
              $i = 1; 
-            $attdArray = [];
-        $attdArray = isset($attendMembers) ? $attendMembers->pluck('member_id')->toArray() : [];
+        //     $attdArray = [];
+        // $attdArray = isset($attendMembers) ? $attendMembers->pluck('member_id')->toArray() : [];
 
         @endphp
         @foreach ($members as $member)
@@ -118,11 +118,18 @@
                 <td>{{ $i }}</td>
                 <td>{{ $member->name; }}</td>
                 <td>
-                        @if(in_array($member->id, $attdArray))
+                       @foreach($attendMembers as $attendMember)
+                             @if($member->id == $attendMember->member_id)
+                              <span class="badge bg-success">{{ $attendMember->time }}</span>
+                              @else
+                              <span class="badge bg-danger">Absent</span>
+                              @endif
+                       @endforeach
+                        {{-- @if(in_array($member->id, $attdArray))
                             <span class="badge bg-success">Present</span>
                         @else
                             <span class="badge bg-danger">Absent</span>
-                        @endif
+                        @endif --}}
                 </td>
             </tr>
     @php $i++; @endphp
