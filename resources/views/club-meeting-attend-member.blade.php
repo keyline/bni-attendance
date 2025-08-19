@@ -111,20 +111,18 @@
              $i = 1; 
         //     $attdArray = [];
         // $attdArray = isset($attendMembers) ? $attendMembers->pluck('member_id')->toArray() : [];
-
+          $attdArray = $attendMembers->pluck('time','member_id')->toArray();
         @endphp
         @foreach ($members as $member)
             <tr>
                 <td>{{ $i }}</td>
                 <td>{{ $member->name; }}</td>
                 <td>
-                       @foreach($attendMembers as $attendMember)
-                             @if($member->id == $attendMember->member_id)
-                              <span class="badge bg-success">{{ $attendMember->time }}</span>
-                              @else
-                              <span class="badge bg-danger">Absent</span>
-                              @endif
-                       @endforeach
+                    @if(isset($attdArray[$member->id]))
+                        <span class="badge bg-success">{{ $attdArray[$member->id] }}</span>
+                    @else
+                        <span class="badge bg-danger">Absent</span>
+                    @endif
                         {{-- @if(in_array($member->id, $attdArray))
                             <span class="badge bg-success">Present</span>
                         @else

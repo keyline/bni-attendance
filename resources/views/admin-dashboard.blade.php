@@ -138,9 +138,10 @@
             @if($admin->member_type == 3)
                 <a href="{{ route('add-club') }}" class="btn btn-success">Add New Club</a>
                 <a href="{{ route('club-listing') }}" class="btn btn-outline-success">View all clubs</a>
+            @else
+             <a href="{{route('members.add', $club->id ?? '')}}" class="btn btn-dark" >Add member</a>
             @endif
         @endif
-        <a href="{{route('members.add', $club->id ?? '')}}" class="btn btn-dark" >Add member</a>
         @if ($admin)
             @if($admin->member_type == 3)
                 <a href="{{ route('admin-listing') }}" class="btn btn-outline-dark">View all members</a>

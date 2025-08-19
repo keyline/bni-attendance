@@ -148,7 +148,8 @@ class MemberController extends Controller
             ];
 
             if (!empty($data['password'])) {
-                $items['password'] = $data['password'];
+                // $items['password'] = $data['password'];
+                 $items['password'] = Hash::make($data['password']);
             }
 
 
@@ -289,6 +290,7 @@ class MemberController extends Controller
 
             if ($club_id) {
                 // update
+                $items['updated_at'] = Carbon::now();
                 DB::table('club')->where('id', $club_id)->update($items);
                 return redirect()->route('club-listing')->with('success', 'Club updated successfully');
             } else {
@@ -387,7 +389,7 @@ class MemberController extends Controller
             // dd($club); die;
 
             // start date = created_at
-            $startDate = Carbon::parse($club->created_at);
+            $startDate = Carbon::parse($club->updated_at);
 
             // last meeting date (from attendance, fallback = today)
                 $endDate = Carbon::now();
@@ -397,12 +399,23 @@ class MemberController extends Controller
             for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
                 $allDates[] = $date->toDateString();
             }
+
+            
+            // $oldStartDate = Carbon::parse($club->created_at);
+            // $oldEndDate = Carbon::parse($club->updated_at);
+            // Generate all dates between
+            // $allOldDates = [];
+            // for ($date = $oldStartDate->copy(); $date->lte($oldEndDate); $date->addDay()) {
+            //     $allOldDates[] = $date->toDateString();
+            // }
             //  dd($allDates); die;
              $clubs = DB::table('club')->get();
+            //  dd($clubs);die();
             return view('club-meetings', [
                 'admin' => $admin,
                 'selected_club' => $club,
                 'dates' => $allDates,
+                // 'oldDates' => $allOldDates,
                 'clubs' => $clubs
             ]);
     }

@@ -109,7 +109,7 @@
         @php $i = 1; @endphp
         @foreach ($dates as $date)
          @php
-         $dayName = Carbon::parse($date)->format('l'); // e.g. Monday, Tuesday
+         $dayName = Carbon::parse($date)->format('l');  // e.g. Monday, Tuesday
          @endphp
          @if($dayName == $selected_club->meeting_day)
             <tr>
@@ -122,6 +122,33 @@
     @endforeach
     </tbody>
 </table>
+<br>
+{{-- <h3>Old meetings</h3>
+<table id="myOldTable" class="display">
+    <thead>
+        <tr>
+            <th>Sl. No.</th>
+            <th>Meeting Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php $i = 1; @endphp
+        @foreach ($oldDates as $date)
+         @php
+         $dayName = Carbon::parse($date)->format('l');  // e.g. Monday, Tuesday
+         @endphp
+         @if($dayName == $selected_club->meeting_day)
+            <tr>
+                <td>{{ $i }}</td>
+                <td>{{ $date; }}</td>
+                <td><a href="{{route('club-meeting-attend-member', ['selected_club' => $selected_club->id, 'club_meeting_date' => $date])}}">show</a></td>
+            </tr>
+        @endif
+    @php $i++; @endphp
+    @endforeach
+    </tbody>
+</table> --}}
 
     @if ($admin)
             @if($admin->member_type == 3)
