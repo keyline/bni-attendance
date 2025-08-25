@@ -72,8 +72,9 @@
             <div class="form-group">
                 <label for="phone" class="form-label">Phone:</label>
                 <input type="text" id="phone" name="phone" class="form-control"  <?php if(isset($member)) echo 'value="'.$member->phone.'"'; ?>
-                required>
+                 maxlength="10" inputmode="numeric"  required >
             <small id="phone-error" class="text-danger d-none">Phone already exists</small>
+            <small id="phone-invalid-msg" class="text-danger d-none">Phone number is invalid</small>
             </div>
             @if($admin->member_type == 3)
             <div class="form-group d-none" id="passwordDiv">
@@ -126,10 +127,25 @@
         });
     });
 
+//     function validatePhone() {
+//     let phone = document.getElementById("phone");
+//     let phoneInvalidMsg = document.getElementById("phone-invalid-msg");
+//     let phonePattern = /^[6-9][0-9]{9}$/;
+//     if (!phonePattern.test(phone)) {
+//          phoneInvalidMsg.classList.remove('d-none');
+//          phone.classList.add('is-invalid');
+
+//     }else{
+//         phoneInvalidMsg.classList.add('d-none');
+//         phone.classList.remove('is-invalid');
+//     }
+     
+//    }
+
     </script>
        <script>
         $(document).ready(function() {
-            $("#email").on("blur", function() {
+            $("#email").on("input", function() {
                 let email = $(this).val();
                 let memberId = $("#member_id").val();
                 let token = $("meta[name='csrf-token']").attr("content"); // include CSRF
@@ -149,7 +165,7 @@
                                 $("#email").addClass("is-invalid");
                                 setTimeout(() => {
                                     $("#email").val('');
-                                }, 2000);
+                                }, 1000);
                             } else {
                                 $("#email-error").addClass("d-none");
                                 $("#email").removeClass("is-invalid");
@@ -159,7 +175,7 @@
                 }
             });
 
-            $("#phone").on("blur", function() {
+            $("#phone").on("input", function() {
                 let phone = $(this).val();
                 let memberId = $("#member_id").val();
                 let token = $("meta[name='csrf-token']").attr("content"); // include CSRF
@@ -179,7 +195,7 @@
                                 $("#phone").addClass("is-invalid");
                                 setTimeout(() => {
                                     $("#phone").val('');
-                                }, 2000);
+                                }, 1000);
                             } else {
                                 $("#phone-error").addClass("d-none");
                                 $("#phone").removeClass("is-invalid");

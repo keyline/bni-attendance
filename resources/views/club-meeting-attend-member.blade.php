@@ -152,7 +152,8 @@
             @endif
         @endif
 {{-- <a href="{{ route('members.add') }}" class="btn btn-primary">Add Member</a> --}}
-<a href="{{ route('attending-listing') }}" class="btn btn-outline-dark">View member's Attendance</a>
+{{-- <a href="{{ route('attending-listing') }}" class="btn btn-outline-dark">View member's Attendance</a> --}}
+<a href="{{ route('club-meeting-day', ['club_id' => $selected_club->id]) }}" class="btn btn-dark">Back</a>
 <a href="{{ route('member.logout') }}" class="btn btn-outline-danger">Log out</a>
 <script>
     $(document).ready(function() {

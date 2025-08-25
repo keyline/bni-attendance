@@ -151,6 +151,11 @@
             @endif
         @endif
 {{-- <a href="{{ route('members.add') }}" class="btn btn-primary">Add Member</a> --}}
+        @if ($admin)
+            @if($admin->member_type == 1)
+                <a href="{{ route('club-meeting-day', ['club_id' => $admin->club_id]) }}" class="btn btn-dark">Back</a>
+            @endif
+        @endif
 <a href="{{ route('member.logout') }}" class="btn btn-outline-danger">Log out</a>
 <script>
     $(document).ready(function() {

@@ -73,7 +73,12 @@ class MemberController extends Controller
                 if ($user->member_type == 2) {
                     return back()->withErrors(['You must be an admin.']);
                 } else {
-                    return redirect()->route('admin-listing');
+                       // return redirect()->route('admin-listing');
+                       if ($user->member_type == 3) {
+                        return redirect()->route('club-listing');
+                       }else{
+                         return redirect()->route('club-meeting-day', ['club_id'=>$user->club_id]);
+                       }
                 }
             }
 
@@ -180,9 +185,14 @@ class MemberController extends Controller
 
     // LOGOUT
     public function logout()
-    {
-        session()->forget('user');
-        return redirect()->route('user-signin')->with('success', 'Logged out successfully');
+    {   
+        if(session('user')->member_type == 2){
+            session()->forget('user');
+            return redirect()->route('user-signin')->with('success', 'Logged out successfully');
+        }else{
+            session()->forget('user');
+            return redirect()->route('signIn')->with('success', 'Logged out successfully');
+        }
     }
 
     // ATTENDING METHOD

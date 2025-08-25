@@ -115,7 +115,7 @@
             <tr>
                 <td>{{ $i }}</td>
                 <td>{{ $date; }}</td>
-                <td><a href="{{route('club-meeting-attend-member', ['selected_club' => $selected_club->id, 'club_meeting_date' => $date])}}">show</a></td>
+                <td><a href="{{route('club-meeting-attend-member', ['selected_club' => $selected_club->id, 'club_meeting_date' => $date])}}">View</a></td>
             </tr>
         @endif
     @php $i++; @endphp
@@ -167,7 +167,17 @@
             @endif
         @endif
 {{-- <a href="{{ route('members.add') }}" class="btn btn-primary">Add Member</a> --}}
-<a href="{{ route('attending-listing') }}" class="btn btn-outline-dark">View member's Attendance</a>
+        @if ($admin)
+            @if($admin->member_type == 1)
+                <a href="{{ route('admin-listing') }}" class="btn btn-outline-dark">View members</a>
+            @endif
+        @endif
+        @if ($admin)
+            @if($admin->member_type == 3)
+                <a href="{{ route('club-listing') }}" class="btn btn-dark">Back</a>
+            @endif
+        @endif
+{{-- <a href="{{ route('club-meeting-day', ['club_id' => $admin->club_id]) }}" class="btn btn-dark">Back</a> --}}
 <a href="{{ route('member.logout') }}" class="btn btn-outline-danger">Log out</a>
 <script>
     $(document).ready(function() {

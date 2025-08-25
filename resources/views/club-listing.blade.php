@@ -113,7 +113,7 @@
                 </td>
                 <td>{{ $club->meeting_day }}</td>
                 <td>
-                    <a href="{{ route('club-meeting-day', ['club_id' => $club->id]) }}">Show</a>
+                    <a href="{{ route('club-meeting-day', ['club_id' => $club->id]) }}">View</a>
                     <a href="{{route('add-club', $club->id)}}">Edit</a>
                     <a href="{{route('members.add', $club->id)}}">Add member</a>
                     <form action="" method="POST" style="display:inline;">
