@@ -436,9 +436,9 @@ class MemberController extends Controller
         if (!$admin || $admin->member_type != 3 && $admin->member_type != 1) {
             return redirect()->route('signIn')->withErrors(['You must be a super admin to access this page']);
         }
-        $attendMembers = DB::table('attendance')
-                         ->where('date', $clubMeetingDate)
-                         ->where('club_id', $selectedClubId)->get();
+        // $attendMembers = DB::table('attendance')
+        //                  ->where('date', $clubMeetingDate)
+        //                  ->where('club_id', $selectedClubId)->get();
 
                         //  dd($attendMembers); die; // Debugging line, remove in production
 
@@ -447,14 +447,27 @@ class MemberController extends Controller
             ->get();
         $clubs = DB::table('club')
             ->get();
+              $clubMeetingDateFormatted = Carbon::parse($clubMeetingDate)->format('d/m/Y');
             //   dd($members); die;
+
+                $attdArray = DB::table('attendance')
+                   ->where('club_id', $selectedClubId)
+                   ->where('date', $clubMeetingDate)
+                  ->pluck('time', 'member_id')
+                  ->toArray();
+            $present = collect($attdArray)
+                ->sortBy(fn($time) => Carbon::parse($time)); 
+            $absent = $members->whereNotIn('id', array_keys($attdArray));
+
             return view('club-meeting-attend-member', [
                 'admin' => $admin,
                 'selected_club' => DB::table('club')->where('id', $selectedClubId)->first(),
-                'attendMembers' => $attendMembers,
+                // 'attendMembers' => $attendMembers,
                 'members' => $members,
+                'present' => $present,
+                'absent' => $absent,
                 'clubs' => $clubs,
-                'clubMeetingDate' => $clubMeetingDate
+                'clubMeetingDate' => $clubMeetingDateFormatted
             ]);
 
     }

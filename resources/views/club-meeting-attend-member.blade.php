@@ -97,6 +97,7 @@
       <h3>All members of</h3>
       <h3>{{$selected_club->club_name}}</h3>
       <h3> Attendance of {{$clubMeetingDate}}</h3>
+      {{-- <h3>Attendance of {{ \Carbon\Carbon::parse($clubMeetingDate)->format('l, d/m/Y') }}</h3> --}}
 </div>
 <table id="myTable" class="display">
     <thead>
@@ -107,10 +108,8 @@
         </tr>
     </thead>
     <tbody>
-        @php
+        {{-- @php
              $i = 1; 
-        //     $attdArray = [];
-        // $attdArray = isset($attendMembers) ? $attendMembers->pluck('member_id')->toArray() : [];
           $attdArray = $attendMembers->pluck('time','member_id')->toArray();
         @endphp
         @foreach ($members as $member)
@@ -123,15 +122,35 @@
                     @else
                         <span class="badge bg-danger">Absent</span>
                     @endif
-                        {{-- @if(in_array($member->id, $attdArray))
-                            <span class="badge bg-success">Present</span>
-                        @else
-                            <span class="badge bg-danger">Absent</span>
-                        @endif --}}
                 </td>
             </tr>
     @php $i++; @endphp
-    @endforeach
+    @endforeach --}}
+    @php $i = 1; @endphp
+@foreach ($present as $memberId => $time)
+    @php $member = $members->firstWhere('id', $memberId); @endphp
+    <tr>
+        <td>{{ $i++ }}</td>
+        <td>{{ $member->name }}</td>
+        <td>
+            <span class="badge bg-success">
+                {{ \Carbon\Carbon::parse($time)->format('H:i:s') }}
+            </span>
+        </td>
+    </tr>
+@endforeach
+
+
+@foreach ($absent as $member)
+    <tr>
+        <td>{{ $i++ }}</td>
+        <td>{{ $member->name }}</td>
+        <td>
+            <span class="badge bg-danger">Absent</span>
+        </td>
+    </tr>
+@endforeach
+
     </tbody>
 </table>
 
