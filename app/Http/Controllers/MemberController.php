@@ -456,7 +456,7 @@ class MemberController extends Controller
                   ->pluck('time', 'member_id')
                   ->toArray();
             $present = collect($attdArray)
-                ->sortBy(fn($time) => Carbon::parse($time)); 
+                ->sortByDesc(fn($time) => Carbon::parse($time)); 
             $absent = $members->whereNotIn('id', array_keys($attdArray));
 
             return view('club-meeting-attend-member', [
