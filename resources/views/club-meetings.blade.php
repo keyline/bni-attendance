@@ -110,6 +110,7 @@
         @foreach ($dates as $date)
          @php
          $dayName = Carbon::parse($date)->format('l');  // e.g. Monday, Tuesday
+        //  echo $date;  
          @endphp
          @if($dayName == $selected_club->meeting_day)
             <tr>

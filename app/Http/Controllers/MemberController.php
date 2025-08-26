@@ -399,16 +399,24 @@ class MemberController extends Controller
             // dd($club); die;
 
             // start date = created_at
-            $startDate = Carbon::parse($club->updated_at);
+            // $startDate = Carbon::parse($club->updated_at);
 
             // last meeting date (from attendance, fallback = today)
-                $endDate = Carbon::now();
+                // $endDate = Carbon::today();
 
             // Generate all dates between
+            // $allDates = [];
+            // for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+            //     $allDates[] = $date->toDateString();
+            // }
+            $startDate = Carbon::parse($club->updated_at)->startOfDay();
+            $endDate   = Carbon::today(); // already date-only at midnight
+
             $allDates = [];
             for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
                 $allDates[] = $date->toDateString();
             }
+
 
             
             // $oldStartDate = Carbon::parse($club->created_at);
