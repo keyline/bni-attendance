@@ -19,7 +19,11 @@
 
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-
+        <style>
+        body{
+            padding: 2rem;
+        }
+    </style>
 </head>
 <div>
     @if (session('success'))
@@ -134,7 +138,7 @@
         @endif
         @if ($supadmin)
             @if($supadmin->member_type == 3)
-                <a href="{{ route('add-club') }}" class="btn btn-dark">View all clubs</a>
+                <a href="{{ route('club-listing') }}" class="btn btn-dark">View all clubs</a>
             @endif
         @endif
         @if ($supadmin)

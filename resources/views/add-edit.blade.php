@@ -76,10 +76,11 @@
             <small id="phone-error" class="text-danger d-none">Phone already exists</small>
             <small id="phone-invalid-msg" class="text-danger d-none">Phone number is invalid</small>
             </div>
+             {{-- class="form-group d-none" --}}
             @if($admin->member_type == 3)
-            <div class="form-group d-none" id="passwordDiv">
+            <div <?php if(isset($member) && !empty($member->password)){ echo 'class="form-group"';}else{echo 'class="form-group d-none"';} ?> id="passwordDiv">
                 <label for="password" class="form-label">Password:</label>
-                <input type="password" id="password" name="password" class="form-control" >
+                <input type="password" id="password" name="password" class="form-control" <?php if(isset($member) && !empty($member->password)){ echo 'value="********"';}else{echo 'value=""';} ?> >
             </div>
                 <div class="form-group ">
                     <label class="form-label">User Type:</label>

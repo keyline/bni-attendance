@@ -20,6 +20,11 @@
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 
+    <style>
+        body{
+            padding: 2rem;
+        }
+    </style>
 </head>
 @php
     use Carbon\Carbon;
@@ -106,8 +111,11 @@
         </tr>
     </thead>
     <tbody>
-        @php $i = 1; @endphp
-        @foreach ($dates as $date)
+        @php
+         $i = 1; 
+          $descOrderedDates = collect($dates)->sortDesc()->values();
+        @endphp
+        @foreach ($descOrderedDates as $date)
          @php
          $dayName = Carbon::parse($date)->format('l');  // e.g. Monday, Tuesday
         //  echo $date;  
@@ -118,8 +126,8 @@
                 <td>{{ $date; }}</td>
                 <td><a href="{{route('club-meeting-attend-member', ['selected_club' => $selected_club->id, 'club_meeting_date' => $date])}}">View</a></td>
             </tr>
+            @php $i++; @endphp
         @endif
-    @php $i++; @endphp
     @endforeach
     </tbody>
 </table>

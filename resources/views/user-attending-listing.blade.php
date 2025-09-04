@@ -25,6 +25,7 @@
     <style>
         body {
             background-color: #f8f9fa;
+            padding: 2rem;
         }
 
         h1,
