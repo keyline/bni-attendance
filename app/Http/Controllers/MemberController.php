@@ -211,6 +211,9 @@ class MemberController extends Controller
                 ->first();
 
             if ($user) {
+                 if($user->member_type == 3){
+                    return back()->withErrors(['This route not for super admin']);
+                 }
                 session(['user' => $user]);
                 $meeting = DB::table('club')->where('id', '=', $user->club_id)->first();
                        if($meeting->meeting_day == date('l')) {
@@ -255,23 +258,24 @@ class MemberController extends Controller
     {
         $user = session('user');
         
-        if ($user && $user->member_type == 2) {
+        // if ($user && $user->member_type == 2) {
             $attendances = DB::table('attendance')->where('member_id', $user->id)->get();
             $clubs = DB::table('club')->get();
             return view('user-attending-listing', ['attendances' => $attendances, 'clubs' => $clubs, 'user' => $user]);
-        }elseif($user && ($user->member_type == 1 || $user->member_type == 3)) {
-               if($user->member_type == 3) {
-                    $attendances = DB::table('attendance')->get();
-               }else{
-                   $attendances = DB::table('attendance')->where('club_id', $user->club_id)->get();
-               }
+        // }
+        // elseif($user && ($user->member_type == 1 || $user->member_type == 3)) {
+        //        if($user->member_type == 3) {
+        //             $attendances = DB::table('attendance')->get();
+        //        }else{
+        //            $attendances = DB::table('attendance')->where('club_id', $user->club_id)->get();
+        //        }
              
-                //   dd($attendances); die;
-               $clubs = DB::table('club')->get();
-               $members = DB::table('member')->where('id', '!=', $user->id)->get();
-               return view('admin-attending-listing', ['attendances' => $attendances, 'clubs' => $clubs,  'admin' => $user, 'members' => $members]);
-        }
-         return redirect()->route('signIn')->withErrors(['Please log in as user']);
+        //         //   dd($attendances); die;
+        //        $clubs = DB::table('club')->get();
+        //        $members = DB::table('member')->where('id', '!=', $user->id)->get();
+        //        return view('admin-attending-listing', ['attendances' => $attendances, 'clubs' => $clubs,  'admin' => $user, 'members' => $members]);
+        // }
+        //  return redirect()->route('signIn')->withErrors(['Please log in as user']);
     }
 
     // ADD CLUB (SUPER ADMIN ONLY)

@@ -99,17 +99,18 @@
             </h4>
             <h5 class="text-success">
            
-                @foreach ($attendances as $attendance)
+                {{-- @foreach ($attendances as $attendance) --}}
                     {{-- Attendance Date --}}
             <h6 class="text-success">
-                Attendence time: {{ \Carbon\Carbon::parse($attendance->time)->format('l, jS F, Y') }}
+                {{-- Attendence time: {{ \Carbon\Carbon::parse($attendance->time)->format('l, jS F, Y') }} --}}
+                Attendence time: {{ \Carbon\Carbon::parse(now())->format('l, jS F, Y') }}
             </h6>
 
             {{-- Attendance Time --}}
             <h2 class="fw-bold">
-                {{ \Carbon\Carbon::parse($attendance->time)->format('h.i A') }}
+                {{ \Carbon\Carbon::parse(now())->format('h.i A') }}
             </h2>
-                @endforeach
+                {{-- @endforeach --}}
             </h5>
         </div>
 
@@ -142,7 +143,7 @@
 
         {{-- Action Buttons --}}
         <div class="mt-4 text-center">
-            <a href="{{ route('member.logout') }}" class="btn btn-outline-danger px-4">close</a>
+            <a href="{{ route('user-signin') }}" class="btn btn-outline-danger px-4">close</a>
         </div>
 
     </div>
