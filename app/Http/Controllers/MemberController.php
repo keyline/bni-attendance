@@ -391,54 +391,55 @@ class MemberController extends Controller
     }
         
     // CLUB Meeting Day
-    public function clubMeetingDay($clubId)
+    // public function clubMeetingDay($clubId)
+    // {
+    //         $admin = session('user');
+    //     if (!$admin || $admin->member_type != 3 && $admin->member_type != 1) {
+    //         // dd($admin); die;
+    //         return redirect()->route('signIn')->withErrors(['You must be a super admin to access this page']);
+    //     }
+
+    //     $club = DB::table('club')->where('id', $clubId)->first();
+    //         $startDate = Carbon::parse($club->updated_at)->startOfDay();
+    //         $endDate   = Carbon::today(); // already date-only at midnight
+
+    //         $allDates = [];
+    //         for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+    //             $allDates[] = $date->toDateString();
+    //         }
+
+    //          $clubs = DB::table('club')->get();
+    //         //  dd($clubs);die();
+    //         return view('club-meetings', [
+    //             'admin' => $admin,
+    //             'selected_club' => $club,
+    //             'dates' => $allDates,
+    //             // 'oldDates' => $allOldDates,
+    //             'clubs' => $clubs
+    //         ]);
+    // }
+
+        public function clubMeetingDay($clubId)
     {
             $admin = session('user');
         if (!$admin || $admin->member_type != 3 && $admin->member_type != 1) {
             // dd($admin); die;
             return redirect()->route('signIn')->withErrors(['You must be a super admin to access this page']);
         }
+                $club = DB::table('attendance')->where('club_id', $clubId)->get();
+                $club_id = $club->first()->club_id;
+                $clubDates = $club->pluck('date')
+                                  ->unique()
+                                  ->sortDesc()   
+                                  ->values()
+                                  ->all();
 
-        $club = DB::table('club')->where('id', $clubId)->first();
-            // dd($club); die;
-
-            // start date = created_at
-            // $startDate = Carbon::parse($club->updated_at);
-
-            // last meeting date (from attendance, fallback = today)
-                // $endDate = Carbon::today();
-
-            // Generate all dates between
-            // $allDates = [];
-            // for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
-            //     $allDates[] = $date->toDateString();
-            // }
-            $startDate = Carbon::parse($club->updated_at)->startOfDay();
-            $endDate   = Carbon::today(); // already date-only at midnight
-
-            $allDates = [];
-            for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
-                $allDates[] = $date->toDateString();
-            }
-
-
-            
-            // $oldStartDate = Carbon::parse($club->created_at);
-            // $oldEndDate = Carbon::parse($club->updated_at);
-            // Generate all dates between
-            // $allOldDates = [];
-            // for ($date = $oldStartDate->copy(); $date->lte($oldEndDate); $date->addDay()) {
-            //     $allOldDates[] = $date->toDateString();
-            // }
-            //  dd($allDates); die;
-             $clubs = DB::table('club')->get();
+                $selected_club = DB::table('club')->where('id', $club_id)->first();
             //  dd($clubs);die();
             return view('club-meetings', [
                 'admin' => $admin,
-                'selected_club' => $club,
-                'dates' => $allDates,
-                // 'oldDates' => $allOldDates,
-                'clubs' => $clubs
+                'selected_club' => $selected_club,
+                'dates' => $clubDates,
             ]);
     }
 
