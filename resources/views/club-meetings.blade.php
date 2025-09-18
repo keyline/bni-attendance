@@ -138,6 +138,7 @@
                         href="{{ route('club-meeting-attend-member', ['selected_club' => $selected_club->id, 'club_meeting_date' => $date]) }}">View</a>
                 </td>
             </tr>
+            @php $i++; @endphp
         @endforeach
     </tbody>
 </table>
