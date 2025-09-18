@@ -92,7 +92,6 @@
             @foreach ($clubs as $club)
                 @if ($club->id == $admin->club_id)
                     {{ $club->meeting_day }}
-                    <?php $club = $club; ?>
                 @endif
             @endforeach
         </h5>

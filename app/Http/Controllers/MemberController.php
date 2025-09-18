@@ -332,6 +332,7 @@ class MemberController extends Controller
 
         $clubs = DB::table('club')->get();
         $admins = DB::table('member')->where('member_type', '=', '1')->get();
+        // dd($clubs);
         return view('club-listing', ['supadmin' => $supadmin, 'clubs' => $clubs, 'admins' => $admins]);
     }
 
@@ -435,11 +436,13 @@ class MemberController extends Controller
                                   ->all();
 
                 $selected_club = DB::table('club')->where('id', $club_id)->first();
-            //  dd($clubs);die();
+            $clubs = DB::table('club')->get();
             return view('club-meetings', [
                 'admin' => $admin,
                 'selected_club' => $selected_club,
                 'dates' => $clubDates,
+                'dates' => $clubDates,
+                'clubs' => $clubs
             ]);
     }
 
