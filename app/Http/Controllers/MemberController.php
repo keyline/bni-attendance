@@ -428,6 +428,9 @@ class MemberController extends Controller
             return redirect()->route('signIn')->withErrors(['You must be a super admin to access this page']);
         }
                 $club = DB::table('attendance')->where('club_id', $clubId)->get();
+                    if ($club->isEmpty()) {
+                    return back()->withErrors(['No attendance records found for this club']);
+                    }
                 $club_id = $club->first()->club_id;
                 $clubDates = $club->pluck('date')
                                   ->unique()
@@ -440,7 +443,6 @@ class MemberController extends Controller
             return view('club-meetings', [
                 'admin' => $admin,
                 'selected_club' => $selected_club,
-                'dates' => $clubDates,
                 'dates' => $clubDates,
                 'clubs' => $clubs
             ]);

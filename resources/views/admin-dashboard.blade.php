@@ -19,8 +19,8 @@
 
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-          <style>
-        body{
+    <style>
+        body {
             padding: 2rem;
         }
     </style>
@@ -56,45 +56,45 @@
     @endif
 </div>
 <div class="row">
-    @if($admin->member_type !== 3)
-    <h1 class="text-center mt-2" style="width: 100%;color: #e0b439;">Club :
-        @foreach($clubs as $club)
-        @if ($club->id == $admin->club_id)
-            {{ $club->club_name }}
-        @endif
-        @endforeach
-    </h1>
+    @if ($admin->member_type !== 3)
+        <h1 class="text-center mt-2" style="width: 100%;color: #e0b439;">Club :
+            @foreach ($clubs as $club)
+                @if ($club->id == $admin->club_id)
+                    {{ $club->club_name }}
+                @endif
+            @endforeach
+        </h1>
     @endif
 </div>
 <div class="row">
-    @if($admin->member_type == 3)
+    @if ($admin->member_type == 3)
         <h4 class="text-center mt-2" style="width: 100%; color: #b9825d;">Super Admin :
-        @if ($admin)
-            {{ $admin->name }}
-        @endif
-       </h4>
+            @if ($admin)
+                {{ $admin->name }}
+            @endif
+        </h4>
     @else
-    <h4 class="text-center mt-2" style="width: 100%; color: #b9825d;">Admin :
-        @if ($admin)
-            {{ $admin->name }}
-        @endif
-    </h4>
+        <h4 class="text-center mt-2" style="width: 100%; color: #b9825d;">Admin :
+            @if ($admin)
+                {{ $admin->name }}
+            @endif
+        </h4>
     @endif
 </div>
 <div class="row">
-    @if($admin->member_type !== 3)
+    @if ($admin->member_type !== 3)
         <h5 class="text-center mt-2" style="width: 100%; color: #89e6a5;">Meeting Day :
-        @foreach($clubs as $club)
-        @if ($club->id == $admin->club_id)
-            {{ $club->meeting_day }}
-            <?php $club = $club; ?>
-        @endif
-        @endforeach
+            @foreach ($clubs as $club)
+                @if ($club->id == $admin->club_id)
+                    {{ $club->meeting_day }}
+                    <?php $club = $club; ?>
+                @endif
+            @endforeach
         </h5>
     @endif
 </div>
 <div class="row">
-      <h3>All members </h3>
+    <h3>All members </h3>
 </div>
 <table id="myTable" class="display">
     <thead>
@@ -114,7 +114,13 @@
             <tr>
                 <td>{{ $i }}</td>
                 <td>{{ $member->name }} </td>
-                <td>@if($member->member_type == 2) {{'Member'}} @elseif($member->member_type == 1) <strong>{{'Admin'}}</strong> @endif</td>
+                <td>
+                    @if ($member->member_type == 2)
+                        {{ 'Member' }}
+                    @elseif($member->member_type == 1)
+                        <strong>{{ 'Admin' }}</strong>
+                    @endif
+                </td>
                 <td>
                     @foreach ($clubs as $club)
                         @if ($club->id == $member->club_id)
@@ -133,37 +139,41 @@
                     </form>
                 </td>
             </tr>
-    @php $i++; @endphp
-    @endforeach
+            @php $i++; @endphp
+        @endforeach
     </tbody>
 </table>
 
-    @if ($admin)
-            @if($admin->member_type == 3)
-                <a href="{{ route('add-club') }}" class="btn btn-success">Add New Club</a>
-                <a href="{{ route('club-listing') }}" class="btn btn-outline-success">View all clubs</a>
-            @else
-             <a href="{{route('members.add', $club->id ?? '')}}" class="btn btn-dark" >Add member</a>
-            @endif
-        @endif
-        @if ($admin)
-            @if($admin->member_type == 3)
-                <a href="{{ route('admin-listing') }}" class="btn btn-outline-dark">View all members</a>
-            @endif
-            @if($admin->member_type == 1)
-            <a href="{{ route('club-meeting-day', ['club_id' => $admin->club_id]) }}" class="btn btn-outline-dark">View member's Attendance</a>
-            @endif
-        @endif
+@if ($admin)
+    @if ($admin->member_type == 3)
+        <a href="{{ route('add-club') }}" class="btn btn-success">Add New Club</a>
+        <a href="{{ route('club-listing') }}" class="btn btn-outline-success">View all clubs</a>
+    @else
+        <a href="{{ route('members.add', $club->id ?? '') }}" class="btn btn-dark">Add member</a>
+    @endif
+@endif
+@if ($admin)
+    @if ($admin->member_type == 3)
+        <a href="{{ route('admin-listing') }}" class="btn btn-outline-dark">View all members</a>
+    @endif
+    @if ($admin->member_type == 1)
+        <a href="{{ route('club-meeting-day', ['club_id' => $admin->club_id]) }}" class="btn btn-outline-dark">View
+            member's Attendance</a>
+    @endif
+@endif
 {{-- <a href="{{ route('members.add') }}" class="btn btn-primary">Add Member</a> --}}
-        @if ($admin)
-            @if($admin->member_type == 1)
-                <a href="{{ route('club-meeting-day', ['club_id' => $admin->club_id]) }}" class="btn btn-dark">Back</a>
-            @endif
-        @endif
+@if ($admin)
+    @if ($admin->member_type == 1)
+        <a href="{{ route('club-meeting-day', ['club_id' => $admin->club_id]) }}" class="btn btn-dark">Back</a>
+    @endif
+@endif
 <a href="{{ route('member.logout') }}" class="btn btn-outline-danger">Log out</a>
 <script>
     $(document).ready(function() {
-        $('#myTable').DataTable();
+        $('#myTable').DataTable({
+            lengthChange: false,
+            paging: false
+        });
     });
 </script>
 
