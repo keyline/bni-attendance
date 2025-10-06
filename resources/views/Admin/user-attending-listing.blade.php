@@ -1,62 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>User Dashboard</title>
+@section('title', 'Member-attendance-list Page')
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+@section('content')
 
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Bootstrap Bundle JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- DataTables JS -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-
-    <style>
-        body {
-            background-color: #f8f9fa;
-            padding: 2rem;
-        }
-
-        h1,
-        h4,
-        h5 {
-            font-weight: 600;
-        }
-
-        .alert {
-            border-radius: 8px;
-            padding: 10px 15px;
-        }
-
-        table.dataTable thead th {
-            background-color: #343a40;
-            color: white;
-            text-align: center;
-        }
-
-        table.dataTable tbody td {
-            text-align: center;
-        }
-
-        .dataTables_wrapper .dataTables_filter input {
-            border-radius: 5px;
-            padding: 5px;
-        }
-    </style>
-</head>
-
-<body>
     <div class="container mt-4">
 
         {{-- Alert Messages --}}
@@ -98,18 +45,18 @@
                 Welcome {{ $user->name ?? '' }}
             </h4>
             <h5 class="text-success">
-           
-                {{-- @foreach ($attendances as $attendance) --}}
-                    {{-- Attendance Date --}}
-            <h6 class="text-success">
-                {{-- Attendence time: {{ \Carbon\Carbon::parse($attendance->time)->format('l, jS F, Y') }} --}}
-                Attendence time: {{ \Carbon\Carbon::parse(now())->format('l, jS F, Y') }}
-            </h6>
 
-            {{-- Attendance Time --}}
-            <h2 class="fw-bold">
-                {{ \Carbon\Carbon::parse(now())->format('h.i A') }}
-            </h2>
+                {{-- @foreach ($attendances as $attendance) --}}
+                {{-- Attendance Date --}}
+                <h6 class="text-success">
+                    {{-- Attendence time: {{ \Carbon\Carbon::parse($attendance->time)->format('l, jS F, Y') }} --}}
+                    Attendence time: {{ \Carbon\Carbon::parse(now())->format('l, jS F, Y') }}
+                </h6>
+
+                {{-- Attendance Time --}}
+                <h2 class="fw-bold">
+                    {{ \Carbon\Carbon::parse(now())->format('h.i A') }}
+                </h2>
                 {{-- @endforeach --}}
             </h5>
         </div>
@@ -160,6 +107,4 @@
             });
         });
     </script>
-</body>
-
-</html>
+@endsection

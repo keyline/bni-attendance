@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Helpers\Helper;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon; 
+use Illuminate\Support\Facades\Crypt;
 
 class MemberController extends Controller
 {
@@ -77,7 +78,7 @@ class MemberController extends Controller
                        if ($user->member_type == 3) {
                         return redirect()->route('club-listing');
                        }else{
-                         return redirect()->route('club-meeting-day', ['club_id'=>$user->club_id]);
+                         return redirect()->route('club-meeting-day', ['club_id'=>Crypt::encrypt($user->club_id)]);
                        }
                 }
             }
@@ -86,7 +87,7 @@ class MemberController extends Controller
             return back()->withErrors(['phoneOrEmail' => 'Invalid credentials']);
         }
 
-        return view('signIn');
+        return view('Admin.signIn');
     }
 
 
@@ -107,7 +108,7 @@ class MemberController extends Controller
        //    dd($members); die;
         $clubs = DB::table('club')->get();
 
-        return view('admin-dashboard', ['admin' => $admin, 'members' => $members, 'clubs' => $clubs]);
+        return view('Admin.admin-dashboard', ['admin' => $admin, 'members' => $members, 'clubs' => $clubs]);
     }
 
     // USER PROFILE
@@ -123,14 +124,17 @@ class MemberController extends Controller
         $club = DB::table('club')->where('id', '=', $user->club_id)->first();
         // $meeting = DB::table('meeting')->where('club_id', '=', $user->club_id)->first();
 
-        return view('user-dashboard', ['user' => $user, 'members' => $members, 'club' => $club]);
+        return view('Admin.user-dashboard', ['user' => $user, 'members' => $members, 'club' => $club]);
     }
 
     // ADD MEMBER (ADMIN ONLY)
     public function add(Request $request, $club_id = null, $member_id = null)
-    { try{
+    {     
+        $clubId = Crypt::decrypt($club_id);
+        $memberId = $member_id ? Crypt::decrypt($member_id) : null;
+        try{
         $admin = session('user');
-        $member = DB::table('member')->where('id', $member_id)->first();      
+        $member = DB::table('member')->where('id', $memberId)->first();      
         if (!$admin || $admin->member_type == 2) {
             return redirect()->route('signIn')->withErrors(['You must be an admin to add members']);
         }
@@ -148,7 +152,7 @@ class MemberController extends Controller
                 'name'        => $data['name'],
                 'phone'       => $data['phone'],
                 'email'       => $data['email'],
-                'club_id'     => $club_id ?? $admin->club_id,
+                'club_id'     => $clubId ?? $admin->club_id,
                 'member_type' => $data['user_type'],
             ];
 
@@ -158,8 +162,8 @@ class MemberController extends Controller
             }
 
 
-               if ($member_id) {
-                DB::table('member')->where('id', $member_id)->update($items);
+               if ($memberId) {
+                DB::table('member')->where('id', $memberId)->update($items);
                 $message = 'Member updated successfully';
             } else {
                 // dd($items); die;
@@ -173,7 +177,7 @@ class MemberController extends Controller
                     $clubs = DB::table('club')->get();
 
         // return view('add-edit')->with('clubs', DB::table('club')->get());
-        return view('add-edit', ['clubs' => $clubs, 'admin' => $admin, 'member' => $member]);
+        return view('Admin.add-edit', ['clubs' => $clubs, 'admin' => $admin, 'member' => $member]);
         }
     }catch (\Exception $e) {
 
@@ -249,7 +253,7 @@ class MemberController extends Controller
             }
             return back()->withErrors(['Error!! Please call admin.']);
         }
-        return view('user-signIn');
+        return view('Admin.user-signIn');
       
     }
     
@@ -261,7 +265,7 @@ class MemberController extends Controller
         // if ($user && $user->member_type == 2) {
             $attendances = DB::table('attendance')->where('member_id', $user->id)->get();
             $clubs = DB::table('club')->get();
-            return view('user-attending-listing', ['attendances' => $attendances, 'clubs' => $clubs, 'user' => $user]);
+            return view('Admin.user-attending-listing', ['attendances' => $attendances, 'clubs' => $clubs, 'user' => $user]);
         // }
         // elseif($user && ($user->member_type == 1 || $user->member_type == 3)) {
         //        if($user->member_type == 3) {
@@ -286,8 +290,8 @@ class MemberController extends Controller
 
         // Fetch club data if editing (GET request)
         $club = null;
-        if ($club_id) {
-            $club = DB::table('club')->where('id', $club_id)->first();
+        if ($request->isMethod('get') && $club_id) {
+            $club = DB::table('club')->where('id', Crypt::decrypt($club_id))->first();
         }
 
         // Handle form submit
@@ -316,7 +320,7 @@ class MemberController extends Controller
         }
 
         // load form (either empty for add, or prefilled for edit)
-        return view('add-club', compact('club'));
+        return view('Admin.add-club', compact('club'));
     }
 
 
@@ -333,7 +337,7 @@ class MemberController extends Controller
         $clubs = DB::table('club')->get();
         $admins = DB::table('member')->where('member_type', '=', '1')->get();
         // dd($clubs);
-        return view('club-listing', ['supadmin' => $supadmin, 'clubs' => $clubs, 'admins' => $admins]);
+        return view('Admin.club-listing', ['supadmin' => $supadmin, 'clubs' => $clubs, 'admins' => $admins]);
     }
 
     // CLUB MEMBER EDIT (SUPER ADMIN ONLY)
@@ -358,7 +362,7 @@ class MemberController extends Controller
             ];
      }
       $clubs = DB::table('club')->get();
-      return view('add-edit', ['member' => $member ?? '','clubs' => $clubs, 'admin' => $admin]);
+      return view('Admin.add-edit', ['member' => $member ?? '','clubs' => $clubs, 'admin' => $admin]);
     }
 
     // Checking duplicate email 
@@ -420,8 +424,9 @@ class MemberController extends Controller
     //         ]);
     // }
 
-        public function clubMeetingDay($clubId)
+        public function clubMeetingDay($club_id)
     {
+           $clubId = Crypt::decrypt($club_id);
             $admin = session('user');
         if (!$admin || $admin->member_type != 3 && $admin->member_type != 1) {
             // dd($admin); die;
@@ -431,16 +436,16 @@ class MemberController extends Controller
                     if ($club->isEmpty()) {
                     return back()->withErrors(['No attendance records found for this club']);
                     }
-                $club_id = $club->first()->club_id;
+                // $club_id = $club->first()->club_id;
                 $clubDates = $club->pluck('date')
                                   ->unique()
                                   ->sortDesc()   
                                   ->values()
                                   ->all();
 
-                $selected_club = DB::table('club')->where('id', $club_id)->first();
+                $selected_club = DB::table('club')->where('id', $clubId)->first();
             $clubs = DB::table('club')->get();
-            return view('club-meetings', [
+            return view('Admin.club-meetings', [
                 'admin' => $admin,
                 'selected_club' => $selected_club,
                 'dates' => $clubDates,
@@ -448,8 +453,9 @@ class MemberController extends Controller
             ]);
     }
 
-    public function clubMeetingAttendMember($selectedClubId, $clubMeetingDate)
-    {
+    public function clubMeetingAttendMember($selected_club, $clubMeetingDate)
+    {  
+        $selectedClubId = Crypt::decrypt($selected_club);
         $admin = session('user');
         if (!$admin || $admin->member_type != 3 && $admin->member_type != 1) {
             return redirect()->route('signIn')->withErrors(['You must be a super admin to access this page']);
@@ -477,7 +483,7 @@ class MemberController extends Controller
                 ->sortByDesc(fn($time) => Carbon::parse($time)); 
             $absent = $members->whereNotIn('id', array_keys($attdArray));
 
-            return view('club-meeting-attend-member', [
+            return view('Admin.club-meeting-attend-member', [
                 'admin' => $admin,
                 'selected_club' => DB::table('club')->where('id', $selectedClubId)->first(),
                 // 'attendMembers' => $attendMembers,

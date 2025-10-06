@@ -1,22 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous">
-    </script>
-        <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
+@section('title', 'member add-edit Page')
 
-<body>
+@section('content')
+
     <div>
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show d-flex align-items-start" role="alert"
@@ -57,37 +44,57 @@
             </div>
             <div class="form-group">
                 <label for="name" class="form-label">Name:</label>
-                <input type="text" id="name" name="name" class="form-control" <?php if(isset($member)) echo 'value="'.$member->name.'"'; ?>
-                required>
+                <input type="text" id="name" name="name" class="form-control" <?php if (isset($member)) {
+                    echo 'value="' . $member->name . '"';
+                } ?> required>
             </div>
 
             <div class="form-group">
                 <label for="email" class="form-label">Email:</label>
-                <input type="email" id="email" name="email" 
-                    class="form-control"
-                    value="{{ $member->email ?? '' }}" required>
+                <input type="email" id="email" name="email" class="form-control" value="{{ $member->email ?? '' }}"
+                    required>
                 <small id="email-error" class="text-danger d-none">Email already exists</small>
             </div>
 
             <div class="form-group">
                 <label for="phone" class="form-label">Phone:</label>
-                <input type="text" id="phone" name="phone" class="form-control"  <?php if(isset($member)) echo 'value="'.$member->phone.'"'; ?>
-                 maxlength="10" inputmode="numeric"  required >
-            <small id="phone-error" class="text-danger d-none">Phone already exists</small>
-            <small id="phone-invalid-msg" class="text-danger d-none">Phone number is invalid</small>
+                <input type="text" id="phone" name="phone" class="form-control" <?php if (isset($member)) {
+                    echo 'value="' . $member->phone . '"';
+                } ?> maxlength="10"
+                    inputmode="numeric" required>
+                <small id="phone-error" class="text-danger d-none">Phone already exists</small>
+                <small id="phone-invalid-msg" class="text-danger d-none">Phone number is invalid</small>
             </div>
-             {{-- class="form-group d-none" --}}
-            @if($admin->member_type == 3)
-            <div <?php if(isset($member) && !empty($member->password)){ echo 'class="form-group"';}else{echo 'class="form-group d-none"';} ?> id="passwordDiv">
-                <label for="password" class="form-label">Password:</label>
-                <input type="password" id="password" name="password" class="form-control" <?php if(isset($member) && !empty($member->password)){ echo 'value="********"';}else{echo 'value=""';} ?> >
-            </div>
+            {{-- class="form-group d-none" --}}
+            @if ($admin->member_type == 3)
+                <div <?php if (isset($member) && !empty($member->password)) {
+                    echo 'class="form-group"';
+                } else {
+                    echo 'class="form-group d-none"';
+                } ?> id="passwordDiv">
+                    <label for="password" class="form-label">Password:</label>
+                    <input type="password" id="password" name="password" class="form-control" <?php if (isset($member) && !empty($member->password)) {
+                        echo 'value="********"';
+                    } else {
+                        echo 'value=""';
+                    } ?>>
+                </div>
                 <div class="form-group ">
                     <label class="form-label">User Type:</label>
                     <div class="form-check">
-                        <input  type="radio" name="user_type"  value="1" <?php if(isset($member)){if($member->member_type == '1'){echo 'checked';}} ?>>
+                        <input type="radio" name="user_type" value="1" <?php if (isset($member)) {
+                            if ($member->member_type == '1') {
+                                echo 'checked';
+                            }
+                        } ?>>
                         <label class="form-check-label" for="user_type_admin">Admin</label>
-                        <input  type="radio" name="user_type"  value="2" <?php if(isset($member)){if($member->member_type == '2'){echo 'checked';}}else{echo 'checked';} ?>>
+                        <input type="radio" name="user_type" value="2" <?php if (isset($member)) {
+                            if ($member->member_type == '2') {
+                                echo 'checked';
+                            }
+                        } else {
+                            echo 'checked';
+                        } ?>>
                         <label class="form-check-label" for="user_type_member">Member</label>
                     </div>
                 </div>
@@ -95,62 +102,60 @@
                 <div class="form-group d-none">
                     <label class="form-label">User Type:</label>
                     <div class="form-check">
-                        <input  type="radio" name="user_type" id="user_type_admin" value="1">
+                        <input type="radio" name="user_type" id="user_type_admin" value="1">
                         <label class="form-check-label" for="user_type_admin">Admin</label>
-                        <input  type="radio" name="user_type" id="user_type_member" value="2" checked>
+                        <input type="radio" name="user_type" id="user_type_member" value="2" checked>
                         <label class="form-check-label" for="user_type_member">Member</label>
                     </div>
                 </div>
-
             @endif
 
             <button type="submit" class="mt-5 btn btn-primary submitBtn">Submit</button>
         </form>
     </div>
-     <a href="{{ route('admin-listing') }}" class="btn btn-dark" style="margin-left: 2rem;">Back</a>
+    <a href="{{ route('admin-listing') }}" class="btn btn-dark" style="margin-left: 2rem;">Back</a>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const userTypeRadios = document.querySelectorAll('input[name="user_type"]');
-        const passwordDiv = document.getElementById('passwordDiv');
-        const passwordInput = passwordDiv.querySelector('input');
+        document.addEventListener('DOMContentLoaded', function() {
+            const userTypeRadios = document.querySelectorAll('input[name="user_type"]');
+            const passwordDiv = document.getElementById('passwordDiv');
+            const passwordInput = passwordDiv.querySelector('input');
 
-        userTypeRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.value === '1') { // Admin selected
-                    passwordDiv.classList.remove('d-none');
-                    passwordInput.setAttribute('required', 'required');
-                } else { // Member selected
-                    passwordDiv.classList.add('d-none');
-                    passwordInput.removeAttribute('required');
-                }
+            userTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === '1') { // Admin selected
+                        passwordDiv.classList.remove('d-none');
+                        passwordInput.setAttribute('required', 'required');
+                    } else { // Member selected
+                        passwordDiv.classList.add('d-none');
+                        passwordInput.removeAttribute('required');
+                    }
+                });
             });
         });
-    });
 
-//     function validatePhone() {
-//     let phone = document.getElementById("phone");
-//     let phoneInvalidMsg = document.getElementById("phone-invalid-msg");
-//     let phonePattern = /^[6-9][0-9]{9}$/;
-//     if (!phonePattern.test(phone)) {
-//          phoneInvalidMsg.classList.remove('d-none');
-//          phone.classList.add('is-invalid');
+        //     function validatePhone() {
+        //     let phone = document.getElementById("phone");
+        //     let phoneInvalidMsg = document.getElementById("phone-invalid-msg");
+        //     let phonePattern = /^[6-9][0-9]{9}$/;
+        //     if (!phonePattern.test(phone)) {
+        //          phoneInvalidMsg.classList.remove('d-none');
+        //          phone.classList.add('is-invalid');
 
-//     }else{
-//         phoneInvalidMsg.classList.add('d-none');
-//         phone.classList.remove('is-invalid');
-//     }
-     
-//    }
+        //     }else{
+        //         phoneInvalidMsg.classList.add('d-none');
+        //         phone.classList.remove('is-invalid');
+        //     }
 
+        //    }
     </script>
-       <script>
+    <script>
         $(document).ready(function() {
             $("#email").on("input", function() {
                 let email = $(this).val();
                 let memberId = $("#member_id").val();
                 let token = $("meta[name='csrf-token']").attr("content"); // include CSRF
-               console.log('Hello World!');
+                console.log('Hello World!');
                 if (email.length > 0) {
                     $.ajax({
                         url: "{{ route('check.email') }}",
@@ -180,7 +185,7 @@
                 let phone = $(this).val();
                 let memberId = $("#member_id").val();
                 let token = $("meta[name='csrf-token']").attr("content"); // include CSRF
-               console.log('Hello World!');
+                console.log('Hello World!');
                 if (phone.length > 0) {
                     $.ajax({
                         url: "{{ route('check.phone') }}",
@@ -207,5 +212,4 @@
             });
         });
     </script>
-</body>
-</html>
+@endsection
