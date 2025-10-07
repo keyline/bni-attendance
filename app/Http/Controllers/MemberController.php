@@ -179,7 +179,7 @@ class MemberController extends Controller
         // return view('add-edit')->with('clubs', DB::table('club')->get());
         return view('Admin.add-edit', ['clubs' => $clubs, 'admin' => $admin, 'member' => $member]);
         }
-    }catch (\Exception $e) {
+     }catch (\Exception $e) {
 
         echo "Error: " . $e->getMessage();
         exit;
