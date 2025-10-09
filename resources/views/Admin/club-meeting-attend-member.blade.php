@@ -110,14 +110,17 @@
     @php $i++; @endphp
     @endforeach --}}
             @php $i = 1; @endphp
-            @foreach ($present as $memberId => $time)
+            {{-- @foreach ($present as $memberId => $time) --}}
+            @foreach ($present as $memberId => $data)
                 @php $member = $members->firstWhere('id', $memberId); @endphp
                 <tr>
                     <td>{{ $i++ }}</td>
-                    <td>{{ $member->name }}</td>
+                    <td>{{ $member->name }} <?php if ($data->is_substitute == 1) {
+                        echo '(' . $data->substitute_name . ' as Substitute attended)';
+                    } ?> </td>
                     <td>
                         <span class="badge bg-success">
-                            {{ \Carbon\Carbon::parse($time)->format('H:i:s') }}
+                            {{ \Carbon\Carbon::parse($data->time)->format('H:i:s') }}
                         </span>
                     </td>
                 </tr>

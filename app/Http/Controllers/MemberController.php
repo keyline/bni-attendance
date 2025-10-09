@@ -11,42 +11,6 @@ use Illuminate\Support\Facades\Crypt;
 
 class MemberController extends Controller
 {
-    // SIGN IN METHOD
-    // public function signIn(Request $request)
-    // {
-    //     if ($request->isMethod('post')) {
-    //         // Validate input
-    //         $data = $request->validate([
-    //             'phoneOrEmail' => 'required|string',
-    //             'password'     => 'required|string',
-    //         ]);
-
-    //         // Find user by phone OR email + password (plain text)
-    //         $user = DB::table('member')
-    //             ->where(function ($query) use ($data) {
-    //                 $query->where('phone', $data['phoneOrEmail'])
-    //                       ->orWhere('email', $data['phoneOrEmail']);
-    //             })
-    //             ->where('password', $data['password'])
-    //             ->first();
-
-    //         if ($user) {
-    //             // Store in session
-    //             session(['user' => $user]);
-
-    //             // Redirect based on role
-    //             if ($user->member_type == 2) {
-    //         return back()->withErrors(['You must be an admin.']);
-    //             } else {
-    //                 return redirect()->route('admin-listing');
-    //             }
-    //         }
-
-    //         return back()->withErrors(['phoneOrEmail' => 'Invalid credentials']);
-    //     }
-
-    //     return view('signIn');
-    // }
 
     // Sign in
     public function signIn(Request $request)
@@ -202,6 +166,7 @@ class MemberController extends Controller
     // ATTENDING METHOD
     public function userSignIn(Request $request)
     {
+            $clubs = DB::table('club')->get();
                 if ($request->isMethod('post')) {
             // Validate input
             $data = $request->validate([
@@ -253,10 +218,68 @@ class MemberController extends Controller
             }
             return back()->withErrors(['Error!! Please call admin.']);
         }
-        return view('Admin.user-signIn');
+        return view('Admin.user-signIn')->with('allclubs', $clubs);
       
     }
     
+    public function substituteSignIn(Request $request)
+    {
+            $clubs = DB::table('club')->get();
+                if ($request->isMethod('post')) {
+            // Validate input
+            $data = $request->validate([
+                'phone' => 'required|regex:/^\d{10}$/',
+            ]);
+
+
+            // Find user by phone
+            $user = DB::table('member')
+                ->where('phone', $data['phone'])
+                ->first();
+
+            if ($user) {
+                 if($user->member_type == 3){
+                    return back()->withErrors(['This route not for super admin']);
+                 }
+                session(['user' => $user]);
+                $meeting = DB::table('club')->where('id', '=', $user->club_id)->first();
+                       if($meeting->meeting_day == date('l')) {
+                            $alreadyExists = DB::table('attendance')
+                                ->where('member_id', $user->id)
+                                ->where('date', date('Y-m-d')) // exact match, works since it's DATE
+                                ->exists();
+
+
+                        if ($alreadyExists) {
+                            return back()->withErrors(['You have already marked attendance today.']);
+                        }
+                     $items = [
+                         'member_id' => $user->id,
+                         'club_id' => $user->club_id,
+                         'date'      => date('Y-m-d'),   // fills the DATE column
+                         'time'      => date('H:i:s'),   // fills the TIME column
+                     ];
+                     DB::table('attendance')->insert($items);
+
+                     
+                        $members = DB::table('member')->where('club_id', '=', $user->club_id)->get();
+                        $club = DB::table('club')->where('id', '=', $user->club_id)->first();
+
+                     return redirect()
+                                ->route('attending-listing')
+                              ->with(['members' => $members, 'club' => $club,  'user' => $user])
+                              ->with('success', 'Welcome ' . $user->name . ', your attendance has been marked successfully.');
+                    }else{
+                        return back()->withErrors(['Today is not your meeting day.']);
+                    }
+
+            }
+            return back()->withErrors(['Error!! Please call admin.']);
+        }
+        return view('Substitute.substitute-signIn')->with('allclubs', $clubs);
+      
+    }
+
     // ATTENDING LISTING
     public function attendingListing()
     {
@@ -394,35 +417,7 @@ class MemberController extends Controller
 
             return response()->json(['exists' => $exists]);
     }
-        
-    // CLUB Meeting Day
-    // public function clubMeetingDay($clubId)
-    // {
-    //         $admin = session('user');
-    //     if (!$admin || $admin->member_type != 3 && $admin->member_type != 1) {
-    //         // dd($admin); die;
-    //         return redirect()->route('signIn')->withErrors(['You must be a super admin to access this page']);
-    //     }
-
-    //     $club = DB::table('club')->where('id', $clubId)->first();
-    //         $startDate = Carbon::parse($club->updated_at)->startOfDay();
-    //         $endDate   = Carbon::today(); // already date-only at midnight
-
-    //         $allDates = [];
-    //         for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
-    //             $allDates[] = $date->toDateString();
-    //         }
-
-    //          $clubs = DB::table('club')->get();
-    //         //  dd($clubs);die();
-    //         return view('club-meetings', [
-    //             'admin' => $admin,
-    //             'selected_club' => $club,
-    //             'dates' => $allDates,
-    //             // 'oldDates' => $allOldDates,
-    //             'clubs' => $clubs
-    //         ]);
-    // }
+       
 
         public function clubMeetingDay($club_id)
     {
@@ -474,13 +469,20 @@ class MemberController extends Controller
               $clubMeetingDateFormatted = Carbon::parse($clubMeetingDate)->format('d/m/Y');
             //   dd($members); die;
 
+                // $attdArray = DB::table('attendance')
+                //    ->where('club_id', $selectedClubId)
+                //    ->where('date', $clubMeetingDate)
+                //   ->pluck('time', 'member_id', 'is_substitute', 'substitute_name')
+                //   ->toArray();
                 $attdArray = DB::table('attendance')
-                   ->where('club_id', $selectedClubId)
-                   ->where('date', $clubMeetingDate)
-                  ->pluck('time', 'member_id')
-                  ->toArray();
-            $present = collect($attdArray)
-                ->sortByDesc(fn($time) => Carbon::parse($time)); 
+                            ->where('club_id', $selectedClubId)
+                            ->where('date', $clubMeetingDate)
+                            ->get(['member_id', 'time', 'is_substitute', 'substitute_name'])
+                            ->keyBy('member_id')
+                            ->toArray();
+            // $present = collect($attdArray)
+            //     ->sortByDesc(fn($time) => Carbon::parse($time)); 
+            $present = collect($attdArray)->sortByDesc(fn($m) => Carbon::parse($m->time));
             $absent = $members->whereNotIn('id', array_keys($attdArray));
 
             return view('Admin.club-meeting-attend-member', [
@@ -496,59 +498,14 @@ class MemberController extends Controller
 
     }
 
+    public function getMembers($clubId)
+    {
+        $members = DB::table('member')->where('club_id', $clubId)->get();
+        return response()->json($members);
+    }
+
       
 }
 
 
-
-    // ATTENDING METHOD  First Attempt
-    // public function attending(Request $request)
-    // {
-    //             if ($request->isMethod('post')) {
-    //         // Validate input
-    //         $data = $request->validate([
-    //             'phoneOrEmail' => 'required|string',
-    //             'password'     => 'required|string',
-    //         ]);
-
-
-    //         // Find user by phone OR email + password (plain text)
-    //         $user = DB::table('member')
-    //             ->where(function ($query) use ($data) {
-    //                 $query->where('phone', $data['phoneOrEmail'])
-    //                       ->orWhere('email', $data['phoneOrEmail']);
-    //             })
-    //             ->where('password', $data['password'])
-    //             ->first();
-
-    //         if ($user && $user->email == session('user')->email) {
-    //             $meeting = DB::table('meeting')->where('club_id', '=', $user->club_id)->first();
-    //                  $items = [
-    //                      'member_id' => $user->id,
-    //                      'meeting_id' => $meeting->id,
-    //                  ];
-    //                  DB::table('attendance')->insert($items);
-    //                  return redirect()->route('user-listing')->with('success', 'Attendance marked successfully');
-    //         }
-
-    //         return back()->withErrors(['phoneOrEmail' => 'Invalid credentials']);
-    //     }
-    //    $user = session('user');
-    //   $meeting = DB::table('meeting')->where('club_id', '=', $user->club_id)->first();
-    //    if($meeting->day == date('l')) {
-    //           $alreadyExists = DB::table('attendance')
-    //         ->where('member_id', $user->id)
-    //         ->where('date', date('Y-m-d'))
-    //         ->exists();
-
-    //     if ($alreadyExists) {
-    //         return redirect()->route('user-listing')->withErrors(['You have already marked attendance today.']);
-    //     }
-    //     return view('attending'); 
-    //   } else {
-    //     // return redirect()->route('user-listing')->withErrors(['Attendance is only available on the meeting day']);
-    //     return back()->withErrors(['Attendance is only available on the meeting day']);
-    //   }
-      
-    // }
 

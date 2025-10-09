@@ -13,12 +13,13 @@ use App\Http\Controllers\MemberController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 // signin and listing routes
 Route::match(['get', 'post'], '/admin', [MemberController::class, 'signIn'])->name('signIn');
 Route::match(['get', 'post'], '/admin/user-signin', [MemberController::class, 'userSignIn'])->name('user-signin');
+Route::match(['get', 'post'], '/admin/substitute-signin', [MemberController::class, 'substituteSignIn'])->name('user-signin');
 Route::match(['get', 'post'], '/admin/admin-listing', [MemberController::class, 'listing'])->name('admin-listing');
 Route::match(['get', 'post'], '/admin/user-listing', [MemberController::class, 'userProfile'])->name('user-listing');
 Route::match(['get', 'post'], '/admin/members/add/{club_id?}/{member_id?}', [MemberController::class, 'add'])->name('members.add');
@@ -43,3 +44,9 @@ Route::post('/check-phone', [MemberController::class, 'checkPhone'])->name('chec
 // club meting day listing
 Route::match(['get', 'post'], '/club-meeting-day/{club_id}', [MemberController::class, 'clubMeetingDay'])->name('club-meeting-day');
 Route::match(['get', 'post'], '/club-meeting-attend-member/{selected_club}/{club_meeting_date}', [MemberController::class, 'clubMeetingAttendMember'])->name('club-meeting-attend-member');
+
+
+// Ajax member fetching
+Route::prefix('admin')->group(function () {
+    Route::get('/get-members/{clubId}', [MemberController::class, 'getMembers'])->name('get.members');
+});
