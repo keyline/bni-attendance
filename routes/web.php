@@ -28,6 +28,7 @@ Route::match(['get', 'post'], '/admin/members/logout', [MemberController::class,
 //atteding routes
 Route::match(['get', 'post'], '/attending', [MemberController::class, 'attending'])->name('attending');
 Route::get('/attending-listing', [MemberController::class, 'attendingListing'])->name('attending-listing');
+Route::get('/substitute-attending-listing', [MemberController::class, 'substituteAttendingListing'])->name('substitute-attending-listing');
 
 //Super Admin routes
 Route::match(['get', 'post'], '/add-club/{club_id?}', [MemberController::class, 'addClub'])->name('add-club');

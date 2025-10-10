@@ -42,7 +42,7 @@
                 @endforeach
             </h1>
             <h4 class="text-secondary">
-                Welcome {{ $user->name ?? '' }}
+                Welcome {{ $substituteName ?? '' }}  Substitute of {{ $user->name ?? '' }}
             </h4>
             <h5 class="text-success">
 
@@ -60,6 +60,7 @@
                 {{-- @endforeach --}}
             </h5>
         </div>
+
         {{-- Action Buttons --}}
         <div class="mt-4 text-center">
             <a href="{{ route('user-signin') }}" class="btn btn-outline-danger px-4">close</a>

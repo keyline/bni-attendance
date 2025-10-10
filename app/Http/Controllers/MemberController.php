@@ -228,13 +228,14 @@ class MemberController extends Controller
                 if ($request->isMethod('post')) {
             // Validate input
             $data = $request->validate([
-                'phone' => 'required|regex:/^\d{10}$/',
+                'memberId' => 'required',
+                'substituteName' => 'required',
             ]);
 
 
             // Find user by phone
             $user = DB::table('member')
-                ->where('phone', $data['phone'])
+                ->where('id', $data['memberId'])
                 ->first();
 
             if ($user) {
@@ -256,6 +257,8 @@ class MemberController extends Controller
                      $items = [
                          'member_id' => $user->id,
                          'club_id' => $user->club_id,
+                         'is_substitute' => 1,
+                         'substitute_name' => $data['substituteName'],
                          'date'      => date('Y-m-d'),   // fills the DATE column
                          'time'      => date('H:i:s'),   // fills the TIME column
                      ];
@@ -266,9 +269,9 @@ class MemberController extends Controller
                         $club = DB::table('club')->where('id', '=', $user->club_id)->first();
 
                      return redirect()
-                                ->route('attending-listing')
-                              ->with(['members' => $members, 'club' => $club,  'user' => $user])
-                              ->with('success', 'Welcome ' . $user->name . ', your attendance has been marked successfully.');
+                                ->route('substitute-attending-listing')
+                              ->with(['members' => $members, 'club' => $club,  'user' => $user, 'substituteName' => $data['substituteName']])
+                              ->with('success', 'Welcome ' . $data['substituteName'] . "( Substitute of " . $user->name . '), your attendance has been marked successfully.');
                     }else{
                         return back()->withErrors(['Today is not your meeting day.']);
                     }
@@ -284,26 +287,20 @@ class MemberController extends Controller
     public function attendingListing()
     {
         $user = session('user');
-        
-        // if ($user && $user->member_type == 2) {
             $attendances = DB::table('attendance')->where('member_id', $user->id)->get();
             $clubs = DB::table('club')->get();
             return view('Admin.user-attending-listing', ['attendances' => $attendances, 'clubs' => $clubs, 'user' => $user]);
-        // }
-        // elseif($user && ($user->member_type == 1 || $user->member_type == 3)) {
-        //        if($user->member_type == 3) {
-        //             $attendances = DB::table('attendance')->get();
-        //        }else{
-        //            $attendances = DB::table('attendance')->where('club_id', $user->club_id)->get();
-        //        }
-             
-        //         //   dd($attendances); die;
-        //        $clubs = DB::table('club')->get();
-        //        $members = DB::table('member')->where('id', '!=', $user->id)->get();
-        //        return view('admin-attending-listing', ['attendances' => $attendances, 'clubs' => $clubs,  'admin' => $user, 'members' => $members]);
-        // }
-        //  return redirect()->route('signIn')->withErrors(['Please log in as user']);
     }
+
+    // SUBSTITUE ATTENDING  LISTING
+    public function substituteAttendingListing()
+    {
+        $user = session('user');
+        $substituteName = session('substituteName');
+            $attendances = DB::table('attendance')->where('member_id', $user->id)->get();
+            $clubs = DB::table('club')->get();
+            return view('Admin.substitute-attending-listing', ['attendances' => $attendances, 'clubs' => $clubs, 'user' => $user, 'substituteName' => $substituteName]);
+    }    
 
     // ADD CLUB (SUPER ADMIN ONLY)
     public function addClub(Request $request, $club_id = null)

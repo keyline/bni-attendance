@@ -40,7 +40,7 @@
                     </div>
                     <div class="mb-3" id="memberNameDiv">
                         <label for="memberName" class="form-label fw-semibold">Member Name</label>
-                        <select class="form-control" name="memberName" id="memberSelectInput">
+                        <select class="form-control" name="memberId" id="memberSelectInput">
                             <option value="">Choose member name</option>
                         </select>
                         <div id="memberNameError" class="form-text text-danger"></div>
@@ -51,12 +51,12 @@
                             class="form-control" required>
                         <div id="substituteNameError" class="form-text text-danger"></div>
                     </div>
-                    <div class="mb-3">
+                    {{-- <div class="mb-3">
                         <label for="phone" class="form-label fw-semibold">Member's Phone Number</label>
                         <input type="text" id="phone" name="phone" pattern="\d{10}" maxlength="10"
                             class="form-control" placeholder="Enter 10-digit phone number" required>
                         <div id="phoneError" class="form-text text-danger"></div>
-                    </div>
+                    </div> --}}
 
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary btn-lg">Submit</button>
