@@ -35,9 +35,12 @@
                     </div>
                     <div class="mb-3">
                         <label for="guestPhone" class="form-label fw-semibold">Phone</label>
-                        <input type="number" id="guestPhone" name="guestPhone" placeholder="Enter your name"
-                            class="form-control" required>
-                        <div id="substituteNameError" class="form-text text-danger"></div>
+                        {{-- <input type="number" id="guestPhone" name="guestPhone" placeholder="Enter your name"
+                            class="form-control" pattern="\d{10}" maxlength="10" required> --}}
+                        <input type="text" id="guestPhone" name="guestPhone" pattern="\d{10}" maxlength="10"
+                                class="form-control form-control-lg shadow-sm"
+                                placeholder="Enter 10-digit phone number" required>
+                        <div id="guestPhoneError" class="form-text text-danger"></div>
                     </div>
                     {{-- <div class="mb-3">
                         <label for="phone" class="form-label fw-semibold">Member's Phone Number</label>
@@ -47,7 +50,7 @@
                     </div> --}}
 
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+                        <button type="submit" class="btn btn-primary btn-lg submitBtn">Submit</button>
                     </div>
                 </form>
             </div>
@@ -55,15 +58,15 @@
     </div>
 
     <script>
-        document.querySelector('#phone').addEventListener('input', function(e) {
+        document.querySelector('#guestPhone').addEventListener('input', function(e) {
 
             var regex = /^[6-9][0-9]{9}$/;
             if (!regex.test(e.target.value)) {
-                document.querySelector('#phoneError').innerHTML =
+                document.querySelector('#guestPhoneError').innerHTML =
                     '<span class="text-danger">Please enter a valid phone number (10 digits).</span>';
                 document.querySelector('.submitBtn').disabled = true;
             } else {
-                document.querySelector('#phoneError').innerHTML = '';
+                document.querySelector('#guestPhoneError').innerHTML = '';
                 document.querySelector('.submitBtn').disabled = false;
             }
         });
@@ -104,6 +107,7 @@
             });
 
         });
-    </script>
 
+
+    </script>
 @endsection
