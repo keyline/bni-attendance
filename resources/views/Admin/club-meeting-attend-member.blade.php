@@ -119,7 +119,7 @@
                 <tr>
                     <td>{{ $i++ }}</td>
                     <td>{{ $member->name }} <?php if ($data->is_substitute == 1) {
-                        echo '(' . $data->substitute_name . ' as Substitute attended)';
+                        echo $data->substitute_name;
                     } ?> </td>
                     <td>
                         <span class="badge bg-success">
@@ -130,7 +130,7 @@
                 @else
                 <tr>
                     <td>{{ $i++ }}</td>
-                    <td>{{ $data->guest_name }} as Guest </td>
+                    <td>{{ $data->guest_name }} as Guest ( {{$data->guest_phone}} )</td>
                     <td>
                         <span class="badge bg-success">
                             {{ \Carbon\Carbon::parse($data->time)->format('H:i:s') }}
