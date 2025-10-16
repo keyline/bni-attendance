@@ -1,3 +1,5 @@
+@php use App\Helpers\Helper; @endphp
+
 @extends('layouts.app')
 
 @section('title', 'Dashboard Page')
@@ -110,7 +112,7 @@
                     <td>{{ $member->phone }}</td>
                     <td>
                         <a
-                            href="{{ route('members.add', ['club_id' => Crypt::encrypt($club->id), 'member_id' => Crypt::encrypt($member->id)]) }}">Edit</a>
+                            href="{{ route('members.add', ['club_id' => Helper::encoded($club->id), 'member_id' => Helper::encoded($member->id)]) }}">Edit</a>
                         <form action="" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
@@ -128,7 +130,7 @@
             <a href="{{ route('add-club') }}" class="btn btn-success">Add New Club</a>
             <a href="{{ route('club-listing') }}" class="btn btn-outline-success">View all clubs</a>
         @else
-            <a href="{{ route('members.add', Crypt::encrypt($club->id) ?? '') }}" class="btn btn-dark">Add member</a>
+            <a href="{{ route('members.add', Helper::encoded($club->id) ?? '') }}" class="btn btn-dark">Add member</a>
         @endif
     @endif
     @if ($admin)
@@ -136,7 +138,7 @@
             <a href="{{ route('admin-listing') }}" class="btn btn-outline-dark">View all members</a>
         @endif
         @if ($admin->member_type == 1)
-            <a href="{{ route('club-meeting-day', ['club_id' => Crypt::encrypt($club->id)]) }}"
+            <a href="{{ route('club-meeting-day', ['club_id' => Helper::encoded($club->id)]) }}"
                 class="btn btn-outline-dark">View
                 member's Attendance</a>
         @endif
@@ -144,7 +146,7 @@
     {{-- <a href="{{ route('members.add') }}" class="btn btn-primary">Add Member</a> --}}
     @if ($admin)
         @if ($admin->member_type == 1)
-            <a href="{{ route('club-meeting-day', ['club_id' => Crypt::encrypt($admin->club_id)]) }}"
+            <a href="{{ route('club-meeting-day', ['club_id' => Helper::encoded($admin->club_id)]) }}"
                 class="btn btn-dark">Back</a>
         @endif
     @endif

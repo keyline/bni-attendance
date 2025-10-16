@@ -1,3 +1,5 @@
+@php use App\Helpers\Helper; @endphp
+
 @extends('layouts.app')
 
 @section('title', 'Club-meeting-list Page')
@@ -112,7 +114,7 @@
                     <td>{{ $i }}</td>
                     <td>{{ $date }}</td>
                     <td><a
-                            href="{{ route('club-meeting-attend-member', ['selected_club' => Crypt::encrypt($selected_club->id), 'club_meeting_date' => $date]) }}">View</a>
+                            href="{{ route('club-meeting-attend-member', ['selected_club' => Helper::encoded($selected_club->id), 'club_meeting_date' => $date]) }}">View</a>
                     </td>
                 </tr>
                 @php $i++; @endphp
@@ -157,7 +159,7 @@
             <a href="{{ route('club-listing') }}" class="btn btn-outline-success">View all clubs</a>
         @endif
     @endif
-    <a href="{{ route('members.add', Crypt::encrypt($selected_club->id)) }}" class="btn btn-dark">Add member</a>
+    <a href="{{ route('members.add', Helper::encoded($selected_club->id)) }}" class="btn btn-dark">Add member</a>
     @if ($admin)
         @if ($admin->member_type == 3)
             <a href="{{ route('admin-listing') }}" class="btn btn-outline-dark">View all members</a>

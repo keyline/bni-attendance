@@ -1,3 +1,5 @@
+@php use App\Helpers\Helper; @endphp
+
 @extends('layouts.app')
 
 @section('title', 'Club-listing Page')
@@ -95,9 +97,9 @@
                     </td>
                     <td>{{ $club->meeting_day }}</td>
                     <td>
-                        <a href="{{ route('club-meeting-day', ['club_id' => Crypt::encrypt($club->id)]) }}">View</a>
-                        <a href="{{ route('add-club', Crypt::encrypt($club->id)) }}">Edit</a>
-                        <a href="{{ route('members.add', Crypt::encrypt($club->id)) }}">Add member</a>
+                        <a href="{{ route('club-meeting-day', ['club_id' => Helper::encoded($club->id)]) }}">View</a>
+                        <a href="{{ route('add-club', Helper::encoded($club->id)) }}">Edit</a>
+                        <a href="{{ route('members.add', Helper::encoded($club->id)) }}">Add member</a>
                         <form action="" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')

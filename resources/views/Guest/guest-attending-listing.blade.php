@@ -35,14 +35,16 @@
         {{-- Page Heading --}}
         <div class="text-center mb-4">
             <h1 class="text-warning">
-                @foreach ($clubs as $club)
-                    @if ($club->id == $user->club_id)
+                {{-- </?php if($user){ $guestName = $user['guestName']; $guestPhone = $user['guestPhone']; } ?> --}}
+                {{-- @foreach ($clubs as $club)
+                    @if ($club->id == $user['clubId'])
                         {{ $club->club_name }}
+                        </?php $clubName = $club->club_name; ?>
                     @endif
-                @endforeach
+                @endforeach --}}
             </h1>
             <h4 class="text-secondary">
-                Welcome {{ $substituteName ?? '' }}  Substitute of {{ $user->name ?? '' }}
+                Welcome {{ $guestName ?? '' }}  Guest of {{ $club->club_name ?? '' }}
             </h4>
             <h5 class="text-success">
 
@@ -63,7 +65,9 @@
 
         {{-- Action Buttons --}}
         <div class="mt-4 text-center">
-            <a href="{{ route('user-signin') }}" class="btn btn-outline-danger px-4">close</a>
+            @if(isset($club))
+            <a href="{{ route('guest-signin', ['club_id' => Helper::encoded($club->id)]) }}" class="btn btn-outline-danger px-4">close</a>
+            @endif
         </div>
 
     </div>

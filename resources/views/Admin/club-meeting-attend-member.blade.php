@@ -1,3 +1,5 @@
+@php use App\Helpers\Helper; @endphp
+
 @extends('layouts.app')
 
 @section('title', 'Attend-member-list Page')
@@ -112,6 +114,7 @@
             @php $i = 1; @endphp
             {{-- @foreach ($present as $memberId => $time) --}}
             @foreach ($present as $memberId => $data)
+                 @if($data->is_guest == 0)
                 @php $member = $members->firstWhere('id', $memberId); @endphp
                 <tr>
                     <td>{{ $i++ }}</td>
@@ -124,6 +127,17 @@
                         </span>
                     </td>
                 </tr>
+                @else
+                <tr>
+                    <td>{{ $i++ }}</td>
+                    <td>{{ $data->guest_name }} as Guest </td>
+                    <td>
+                        <span class="badge bg-success">
+                            {{ \Carbon\Carbon::parse($data->time)->format('H:i:s') }}
+                        </span>
+                    </td>
+                </tr>
+                @endif
             @endforeach
 
 
@@ -150,7 +164,7 @@
             <a href="{{ route('club-listing') }}" class="btn btn-outline-success">View all clubs</a>
         @endif
     @endif
-    <a href="{{ route('members.add', ['club_id' => Crypt::encrypt($selected_club->id)]) }}" class="btn btn-dark">Add
+    <a href="{{ route('members.add', ['club_id' => Helper::encoded($selected_club->id)]) }}" class="btn btn-dark">Add
         member</a>
     @if ($admin)
         @if ($admin->member_type == 3)
@@ -159,7 +173,7 @@
     @endif
     {{-- <a href="{{ route('members.add') }}" class="btn btn-primary">Add Member</a> --}}
     {{-- <a href="{{ route('attending-listing') }}" class="btn btn-outline-dark">View member's Attendance</a> --}}
-    <a href="{{ route('club-meeting-day', ['club_id' => Crypt::encrypt($selected_club->id)]) }}"
+    <a href="{{ route('club-meeting-day', ['club_id' => Helper::encoded($selected_club->id)]) }}"
         class="btn btn-dark">Back</a>
     <a href="{{ route('member.logout') }}" class="btn btn-outline-danger">Log out</a>
     <script>

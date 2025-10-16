@@ -23,6 +23,9 @@
 
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('css/signIn/style.css') }}">
     <style>
         body {
             background-color: #f8f9fa;

@@ -23,32 +23,28 @@
         {{-- Attendance Form --}}
         <div class="card shadow-sm mx-auto" style="max-width: 500px;">
             <div class="card-body p-4">
-                <h3 class="text-center mb-4 fw-bold">Attendance of {{ $club->club_name }} as Substitute</h3>
+                <h3 class="text-center mb-4 fw-bold">Attendance of {{$club->club_name}} as Guest </h3>
 
-                <form action="" method="POST">
+                <form action="{{ route('guest-signin', ['club_id' => Helper::encoded($club->id)]) }}" method="POST">
                     @csrf
-                    <div class="mb-3" id="memberNameDiv">
-                        <label for="memberName" class="form-label fw-semibold">Member Name</label>
-                        <select class="form-control" name="memberId" id="memberSelectInput">
-                            <option value="">Choose member name</option>
-                            <?php foreach($members as $member){ ?>
-                                <option value="{{ $member->id }}"> {{ $member->name}} </option>
-                                <?php } ?>
-                        </select>
-                        <div id="memberNameError" class="form-text text-danger"></div>
-                    </div>
                     <div class="mb-3">
-                        <label for="substituteName" class="form-label fw-semibold">Substitute Name</label>
-                        <input type="text" id="substituteName" name="substituteName" placeholder="Enter your name"
+                        <label for="guestName" class="form-label fw-semibold">Name</label>
+                        <input type="text" id="guestName" name="guestName" placeholder="Enter your name"
                             class="form-control" required>
                         <div id="substituteNameError" class="form-text text-danger"></div>
                     </div>
                     <div class="mb-3">
+                        <label for="guestPhone" class="form-label fw-semibold">Phone</label>
+                        <input type="number" id="guestPhone" name="guestPhone" placeholder="Enter your name"
+                            class="form-control" required>
+                        <div id="substituteNameError" class="form-text text-danger"></div>
+                    </div>
+                    {{-- <div class="mb-3">
                         <label for="phone" class="form-label fw-semibold">Member's Phone Number</label>
-                        <input type="text" id="phone" name="substitutePhone" pattern="\d{10}" maxlength="10"
+                        <input type="text" id="phone" name="phone" pattern="\d{10}" maxlength="10"
                             class="form-control" placeholder="Enter 10-digit phone number" required>
                         <div id="phoneError" class="form-text text-danger"></div>
-                    </div>
+                    </div> --}}
 
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary btn-lg">Submit</button>

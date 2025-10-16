@@ -1,3 +1,4 @@
+@php use App\Helpers\Helper; @endphp
 @extends('layouts.app')
 
 @section('title', 'Member Dashboard Page')

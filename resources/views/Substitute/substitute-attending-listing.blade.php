@@ -41,10 +41,10 @@
                         {{ $club->club_name }}
                     @endif
                 @endforeach --}}
-                {{ $club->club_name }}
+                {{ $club->club_name ?? ''}}
             </h1>
             <h4 class="text-secondary">
-                Welcome {{ $user->name ?? '' }}
+                Welcome {{ $substituteName ?? '' }}  Substitute of {{ $user->name ?? '' }}
             </h4>
             <h5 class="text-success">
 
@@ -62,9 +62,10 @@
                 {{-- @endforeach --}}
             </h5>
         </div>
+
         {{-- Action Buttons --}}
         <div class="mt-4 text-center">
-            <a href="{{ route('user-signin', ['club_id' => Helper::encoded($club->id)]) }}" class="btn btn-outline-danger px-4">close</a>
+            <a href="{{ route('substitute-signin', ['club_id' => Helper::encoded($club->id)]) }}" class="btn btn-outline-danger px-4">close</a>
         </div>
 
     </div>

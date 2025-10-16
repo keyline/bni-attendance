@@ -6,8 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\Helper;
 use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon; 
-use Illuminate\Support\Facades\Crypt;
+use Carbon\Carbon;
 
 class MemberController extends Controller
 {
@@ -42,7 +41,7 @@ class MemberController extends Controller
                        if ($user->member_type == 3) {
                         return redirect()->route('club-listing');
                        }else{
-                         return redirect()->route('club-meeting-day', ['club_id'=>Crypt::encrypt($user->club_id)]);
+                         return redirect()->route('club-meeting-day', ['club_id'=>Helper::encoded($user->club_id)]);
                        }
                 }
             }
@@ -94,8 +93,8 @@ class MemberController extends Controller
     // ADD MEMBER (ADMIN ONLY)
     public function add(Request $request, $club_id = null, $member_id = null)
     {     
-        $clubId = Crypt::decrypt($club_id);
-        $memberId = $member_id ? Crypt::decrypt($member_id) : null;
+        $clubId = Helper::decoded($club_id);
+        $memberId = $member_id ? Helper::decoded($member_id) : null;
         try{
         $admin = session('user');
         $member = DB::table('member')->where('id', $memberId)->first();      
@@ -164,9 +163,11 @@ class MemberController extends Controller
     }
 
     // ATTENDING METHOD
-    public function userSignIn(Request $request)
+    public function userSignIn(Request $request, $club_id)
     {
-            $clubs = DB::table('club')->get();
+            $clubId = Helper::decoded($club_id);
+            $club = DB::table('club')->where('id', '=', $clubId)->first();
+            // Helper::pr($club); die;
                 if ($request->isMethod('post')) {
             // Validate input
             $data = $request->validate([
@@ -177,6 +178,7 @@ class MemberController extends Controller
             // Find user by phone
             $user = DB::table('member')
                 ->where('phone', $data['phone'])
+                ->where('club_id', $clubId)
                 ->first();
 
             if ($user) {
@@ -208,7 +210,7 @@ class MemberController extends Controller
                         $club = DB::table('club')->where('id', '=', $user->club_id)->first();
 
                      return redirect()
-                                ->route('attending-listing')
+                                ->route('attending-listing', ['club_id' => Helper::encoded($clubId)])
                               ->with(['members' => $members, 'club' => $club,  'user' => $user])
                               ->with('success', 'Welcome ' . $user->name . ', your attendance has been marked successfully.');
                     }else{
@@ -218,24 +220,28 @@ class MemberController extends Controller
             }
             return back()->withErrors(['Error!! Please call admin.']);
         }
-        return view('Admin.user-signIn')->with('allclubs', $clubs);
+        return view('Admin.user-signIn')->with('club', $club);
       
     }
     
-    public function substituteSignIn(Request $request)
+    public function substituteSignIn(Request $request, $club_id)
     {
-            $clubs = DB::table('club')->get();
+            $clubId = Helper::decoded($club_id);
+            $club = DB::table('club')->where('id', '=', $clubId)->first();
+            $members = DB::table('member')->where('club_id', '=', $clubId)->get();
                 if ($request->isMethod('post')) {
             // Validate input
             $data = $request->validate([
                 'memberId' => 'required',
                 'substituteName' => 'required',
+                'substitutePhone' => 'required',
             ]);
 
 
             // Find user by phone
             $user = DB::table('member')
                 ->where('id', $data['memberId'])
+                ->where('club_id', $clubId)
                 ->first();
 
             if ($user) {
@@ -247,6 +253,7 @@ class MemberController extends Controller
                        if($meeting->meeting_day == date('l')) {
                             $alreadyExists = DB::table('attendance')
                                 ->where('member_id', $user->id)
+                                ->where('club_id', $user->club_id)
                                 ->where('date', date('Y-m-d')) // exact match, works since it's DATE
                                 ->exists();
 
@@ -259,6 +266,7 @@ class MemberController extends Controller
                          'club_id' => $user->club_id,
                          'is_substitute' => 1,
                          'substitute_name' => $data['substituteName'],
+                         'substitute_phone' => $data['substitutePhone'],
                          'date'      => date('Y-m-d'),   // fills the DATE column
                          'time'      => date('H:i:s'),   // fills the TIME column
                      ];
@@ -269,7 +277,7 @@ class MemberController extends Controller
                         $club = DB::table('club')->where('id', '=', $user->club_id)->first();
 
                      return redirect()
-                                ->route('substitute-attending-listing')
+                                ->route('substitute-attending-listing', ['club_id' => Helper::encoded($clubId)])
                               ->with(['members' => $members, 'club' => $club,  'user' => $user, 'substituteName' => $data['substituteName']])
                               ->with('success', 'Welcome ' . $data['substituteName'] . "( Substitute of " . $user->name . '), your attendance has been marked successfully.');
                     }else{
@@ -279,28 +287,121 @@ class MemberController extends Controller
             }
             return back()->withErrors(['Error!! Please call admin.']);
         }
-        return view('Substitute.substitute-signIn')->with('allclubs', $clubs);
+        return view('Substitute.substitute-signIn')->with('club', $club)->with('members', $members);
       
     }
 
+    public function guestSignIn(Request $request, $club_id = null)
+    {
+        // 1) Prefer path param; fallback to posted club_id
+        $rawClubId = $club_id ?? $request->input('club_id');
+
+        if (empty($rawClubId)) {
+            return redirect()->back()->withErrors(['Club ID missing.']);
+        }
+
+        // 2) Decode if needed (allow numeric ids too)
+        try {
+            if (is_numeric($rawClubId)) {
+                $clubId = (int) $rawClubId;
+            } else {
+                $clubId = Helper::decoded($rawClubId);
+            }
+        } catch (\Throwable $e) {
+            return redirect()->back()->withErrors(['Invalid club id.']);
+        }
+
+        // 3) Load club once and check
+        $club = DB::table('club')->where('id', '=', $clubId)->first();
+        if (! $club) {
+            return redirect()->back()->withErrors(['Club not found.']);
+        }
+
+        // 4) Handle POST
+        if ($request->isMethod('post')) {
+            $data = $request->validate([
+                'guestName'  => 'required|string|max:255',
+                'guestPhone' => ['required', 'regex:/^[6-9]\d{9}$/'],
+            ]);
+
+            // If phone belongs to an existing member, block or handle accordingly
+            $user = DB::table('member')->where('phone', $data['guestPhone'])->first();
+            if ($user) {
+                return back()->withErrors(['This phone belongs to a registered member.']);
+            }
+
+            // Check meeting day
+            if ($club->meeting_day !== date('l')) {
+                return back()->withErrors(['Today is not your meeting day.']);
+            }
+
+            // Prevent duplicate guest attendance
+            $alreadyExists = DB::table('attendance')
+                ->where('guest_phone', $data['guestPhone'])
+                ->where('club_id', $clubId)
+                ->where('date', date('Y-m-d'))
+                ->exists();
+
+            if ($alreadyExists) {
+                return back()->withErrors(['You have already marked attendance today.']);
+            }
+
+            DB::table('attendance')->insert([
+                'member_id'   => 0,
+                'club_id'     => $clubId,
+                'is_guest'    => 1,
+                'guest_name'  => $data['guestName'],
+                'guest_phone' => $data['guestPhone'],
+                'date'        => date('Y-m-d'),
+                'time'        => date('H:i:s'),
+            ]);
+
+            $club = DB:: table('club')->where('id', '=', $clubId)->first();
+
+            return redirect()
+                ->route('guest-attending-listing', ['club_id' => Helper::encoded($clubId)])
+                ->with(['guestName' => $data['guestName']])
+                ->with('success', 'Welcome ' . $data['guestName'] . ' (Guest of ' . $club->club_name . '), your attendance has been marked successfully.');
+        }
+
+        // 5) GET — show view
+        return view('Guest.guest-signIn')->with('club', $club);
+    }
+
+
     // ATTENDING LISTING
-    public function attendingListing()
+    public function attendingListing($club_id)
     {
         $user = session('user');
+        $clubId = Helper::decoded($club_id);
             $attendances = DB::table('attendance')->where('member_id', $user->id)->get();
-            $clubs = DB::table('club')->get();
-            return view('Admin.user-attending-listing', ['attendances' => $attendances, 'clubs' => $clubs, 'user' => $user]);
+            $club = DB::table('club')->where('id', '=', $clubId)->first();
+            return view('Admin.user-attending-listing', ['attendances' => $attendances, 'club' => $club, 'user' => $user]);
     }
 
     // SUBSTITUE ATTENDING  LISTING
-    public function substituteAttendingListing()
+    public function substituteAttendingListing($club_id)
     {
         $user = session('user');
+        $clubId = Helper::decoded($club_id);
         $substituteName = session('substituteName');
             $attendances = DB::table('attendance')->where('member_id', $user->id)->get();
-            $clubs = DB::table('club')->get();
-            return view('Admin.substitute-attending-listing', ['attendances' => $attendances, 'clubs' => $clubs, 'user' => $user, 'substituteName' => $substituteName]);
+            $club = DB::table('club')->where('id', '=', $clubId)->first();
+            return view('Substitute.substitute-attending-listing', ['attendances' => $attendances, 'club' => $club, 'user' => $user, 'substituteName' => $substituteName]);
     }    
+
+    // SUBSTITUE ATTENDING  LISTING
+    public function guestAttendingListing($club_id)
+    {
+        $user = session('user');
+        $clubId = Helper::decoded($club_id);
+        // echo ($user['guestName']); die;
+        // $substituteName = session('substituteName');
+            $attendances = DB::table('attendance')->where('member_id', $user['guestPhone'])->get();
+            $club = DB::table('club')->where('id', '=', $clubId)->first();
+            return view('Guest.guest-attending-listing', ['attendances' => $attendances, 'club' => $club, 'user' => $user]);
+    } 
+    
 
     // ADD CLUB (SUPER ADMIN ONLY)
     public function addClub(Request $request, $club_id = null)
@@ -311,7 +412,7 @@ class MemberController extends Controller
         // Fetch club data if editing (GET request)
         $club = null;
         if ($request->isMethod('get') && $club_id) {
-            $club = DB::table('club')->where('id', Crypt::decrypt($club_id))->first();
+            $club = DB::table('club')->where('id', Helper::decoded($club_id))->first();
         }
 
         // Handle form submit
@@ -418,7 +519,7 @@ class MemberController extends Controller
 
         public function clubMeetingDay($club_id)
     {
-           $clubId = Crypt::decrypt($club_id);
+           $clubId = Helper::decoded($club_id);
             $admin = session('user');
         if (!$admin || $admin->member_type != 3 && $admin->member_type != 1) {
             // dd($admin); die;
@@ -447,7 +548,7 @@ class MemberController extends Controller
 
     public function clubMeetingAttendMember($selected_club, $clubMeetingDate)
     {  
-        $selectedClubId = Crypt::decrypt($selected_club);
+        $selectedClubId = Helper::decoded($selected_club);
         $admin = session('user');
         if (!$admin || $admin->member_type != 3 && $admin->member_type != 1) {
             return redirect()->route('signIn')->withErrors(['You must be a super admin to access this page']);
@@ -474,7 +575,7 @@ class MemberController extends Controller
                 $attdArray = DB::table('attendance')
                             ->where('club_id', $selectedClubId)
                             ->where('date', $clubMeetingDate)
-                            ->get(['member_id', 'time', 'is_substitute', 'substitute_name'])
+                            ->get(['member_id', 'time', 'is_substitute', 'substitute_name', 'is_guest', 'guest_name', 'guest_phone'])
                             ->keyBy('member_id')
                             ->toArray();
             // $present = collect($attdArray)

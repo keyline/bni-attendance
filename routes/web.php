@@ -18,17 +18,24 @@ use App\Http\Controllers\MemberController;
 // });
 // signin and listing routes
 Route::match(['get', 'post'], '/admin', [MemberController::class, 'signIn'])->name('signIn');
-Route::match(['get', 'post'], '/admin/user-signin', [MemberController::class, 'userSignIn'])->name('user-signin');
-Route::match(['get', 'post'], '/admin/substitute-signin', [MemberController::class, 'substituteSignIn'])->name('user-signin');
+// Route::match(['get', 'post'], '/admin/user-signin', [MemberController::class, 'userSignIn'])->name('user-signin');
+// Route::match(['get', 'post'], '/admin/substitute-signin', [MemberController::class, 'substituteSignIn'])->name('substitute-signin');
+// Route::match(['get', 'post'], '/admin/guest-signin', [MemberController::class, 'guestSignIn'])->name('guest-signin');
 Route::match(['get', 'post'], '/admin/admin-listing', [MemberController::class, 'listing'])->name('admin-listing');
 Route::match(['get', 'post'], '/admin/user-listing', [MemberController::class, 'userProfile'])->name('user-listing');
 Route::match(['get', 'post'], '/admin/members/add/{club_id?}/{member_id?}', [MemberController::class, 'add'])->name('members.add');
 Route::match(['get', 'post'], '/admin/members/logout', [MemberController::class, 'logout'])->name('member.logout');
 
+//new route for BNI club ( club id is MQ%3D%3D )
+ Route::match(['get', 'post'], '/admin/user-signin/BNI/{club_id}', [MemberController::class, 'userSignIn'])->name('user-signin');
+ Route::match(['get', 'post'], '/admin/substitute-signin/BNI/{club_id}', [MemberController::class, 'substituteSignIn'])->name('substitute-signin');
+ Route::match(['get', 'post'], '/admin/guest-signin/BNI/{club_id}', [MemberController::class, 'guestSignIn'])->name('guest-signin');
+
 //atteding routes
 Route::match(['get', 'post'], '/attending', [MemberController::class, 'attending'])->name('attending');
-Route::get('/attending-listing', [MemberController::class, 'attendingListing'])->name('attending-listing');
-Route::get('/substitute-attending-listing', [MemberController::class, 'substituteAttendingListing'])->name('substitute-attending-listing');
+Route::get('/attending-listing/{club_id}', [MemberController::class, 'attendingListing'])->name('attending-listing');
+Route::get('/substitute-attending-listing/{club_id}', [MemberController::class, 'substituteAttendingListing'])->name('substitute-attending-listing');
+Route::get('/guest-attending-listing/{club_id}', [MemberController::class, 'guestAttendingListing'])->name('guest-attending-listing');
 
 //Super Admin routes
 Route::match(['get', 'post'], '/add-club/{club_id?}', [MemberController::class, 'addClub'])->name('add-club');
