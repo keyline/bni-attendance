@@ -9,7 +9,7 @@
             {{-- Error Messages --}}
             @if ($errors->any())
                 <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                    <strong><i class="bi bi-exclamation-triangle-fill me-2"></i>Oops!</strong> Please fix the following errors:
+                    {{-- <strong><i class="bi bi-exclamation-triangle-fill me-2"></i>Oops!</strong> Please fix the following errors: --}}
                     <ul class="mt-2 mb-0 ps-3">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
