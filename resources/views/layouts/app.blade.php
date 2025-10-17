@@ -58,7 +58,9 @@
             padding: 5px;
         }
     </style>
+
     @yield('styles')
+    
 </head>
 
 <body>
