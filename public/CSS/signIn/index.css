@@ -1,0 +1,142 @@
+.container-hero {
+    padding: 3.5rem 1rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* subtle background */
+body {
+    background: linear-gradient(180deg, #eef2f7 0%, #fbfdff 50%, #f7fff6 100%);
+}
+
+/* Hero */
+.hero {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.hero h1 {
+    font-weight: 700;
+    letter-spacing: -0.4px;
+}
+.hero p.lead {
+    color: #57636e;
+    margin-top: .5rem;
+}
+
+/* Grid */
+.attendance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    align-items: stretch;
+}
+
+/* Card (glass look) */
+.att-card {
+    background: rgba(255,255,255,0.78);
+    border-radius: 14px;
+    padding: 1.25rem;
+    box-shadow: 0 10px 30px rgba(24,39,56,0.06);
+    border: 1px solid rgba(30, 40, 60, 0.04);
+    transition: transform .16s ease, box-shadow .16s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 170px;
+}
+.att-card:focus-within,
+.att-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 48px rgba(24,39,56,0.10);
+}
+
+/* left block */
+.card-top {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* icon circle */
+.att-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 6px 18px rgba(10,10,10,0.06);
+}
+
+/* titles */
+.card-title {
+    font-size: 1.06rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.card-desc {
+    color: #56606a;
+    font-size: .95rem;
+    margin: 0;
+}
+
+/* colors */
+.icon-member { background: linear-gradient(135deg,#3b82f6,#06b6d4); }
+.icon-substitute { background: linear-gradient(135deg,#f97316,#f43f5e); }
+.icon-guest { background: linear-gradient(135deg,#8b5cf6,#06b6d4); }
+
+/* action row */
+.card-action {
+    margin-top: 1rem;
+    display: flex;
+    gap: .6rem;
+}
+
+/* main CTA: full width on small, inline on larger */
+.cta {
+    flex: 1 1 auto;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: .5rem .7rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+}
+
+/* small subtle secondary link */
+.cta-secondary {
+    border-radius: 10px;
+    padding: .45rem .6rem;
+    background: transparent;
+    border: none;
+    color: #5c6b75;
+    font-weight: 600;
+}
+
+/* gradients for CTAs */
+.btn-gradient-primary {
+    background: linear-gradient(90deg,#2563eb,#06b6d4);
+    color: #fff;
+    border: none;
+}
+.btn-gradient-warning {
+    background: linear-gradient(90deg,#f97316,#fb7185);
+    color: #fff;
+    border: none;
+}
+.btn-gradient-success {
+    background: linear-gradient(90deg,#10b981,#06b6d4);
+    color: #fff;
+    border: none;
+}
+
+/* Responsive tweaks */
+@media (max-width: 420px) {
+    .att-icon { width: 50px; height: 50px; font-size: 1.1rem; }
+    .card-action { flex-direction: column; }
+    .cta-secondary { width: 100%; text-align: center; }
+}

@@ -82,7 +82,6 @@
         <h3>All members of</h3>
         <h3>{{ $selected_club->club_name }}</h3>
         <h3> Attendance of {{ $clubMeetingDate }}</h3>
-        {{-- <h3>Attendance of {{ \Carbon\Carbon::parse($clubMeetingDate)->format('l, d/m/Y') }}</h3> --}}
     </div>
     <table id="myTable" class="display">
         <thead>
@@ -90,54 +89,48 @@
                 <th>Sl. No.</th>
                 <th>Member Name</th>
                 <th>Status</th>
+                <th>Substitute</th>
+                <th>Visitors</th>
             </tr>
         </thead>
         <tbody>
-            {{-- @php
-             $i = 1; 
-          $attdArray = $attendMembers->pluck('time','member_id')->toArray();
-        @endphp
-        @foreach ($members as $member)
-            <tr>
-                <td>{{ $i }}</td>
-                <td>{{ $member->name; }}</td>
-                <td>
-                    @if (isset($attdArray[$member->id]))
-                        <span class="badge bg-success">{{ $attdArray[$member->id] }}</span>
-                    @else
-                        <span class="badge bg-danger">Absent</span>
-                    @endif
-                </td>
-            </tr>
-    @php $i++; @endphp
-    @endforeach --}}
             @php $i = 1; @endphp
-            {{-- @foreach ($present as $memberId => $time) --}}
             @foreach ($present as $memberId => $data)
-                 @if($data->is_guest == 0)
                 @php $member = $members->firstWhere('id', $memberId); @endphp
                 <tr>
                     <td>{{ $i++ }}</td>
-                    <td>{{ $member->name }} <?php if ($data->is_substitute == 1) {
-                        echo $data->substitute_name;
-                    } ?> </td>
+                    <td>{{ $member->name }}</td>
                     <td>
                         <span class="badge bg-success">
                             {{ \Carbon\Carbon::parse($data->time)->format('H:i:s') }}
                         </span>
                     </td>
-                </tr>
-                @else
-                <tr>
-                    <td>{{ $i++ }}</td>
-                    <td>{{ $data->guest_name }} as Guest ( {{$data->guest_phone}} )</td>
                     <td>
-                        <span class="badge bg-success">
-                            {{ \Carbon\Carbon::parse($data->time)->format('H:i:s') }}
-                        </span>
-                    </td>
+                        @if ($data->is_substitute == 1)
+                             <span class="badge bg-info text-dark">
+                                {{ $data->substitute_name }} ({{ $data->substitute_phone }})
+                             </span>
+                        @else
+                            <span class="badge bg-secondary">-</span>
+                        @endif
+                    </td>  
+                    <td>
+                        <?php 
+                           if(!empty($allguests)){
+                             foreach ($allguests as $guest) {
+                                if ($guest->member_id == $memberId){ ?>
+                                        <span class="badge bg-info text-dark">
+                                        {{ $guest->name }} ({{ $guest->phone }})
+                                        </span><br>
+                               <?php  }
+                             }
+                        }else{
+                            echo '<span class="badge bg-secondary">-</span>';
+                        }
+                            ?>       
+                    </td> 
+
                 </tr>
-                @endif
             @endforeach
 
 
@@ -148,6 +141,30 @@
                     <td>
                         <span class="badge bg-danger">Absent</span>
                     </td>
+                    <td>
+                        {{-- @if ($data->is_substitute == 1)
+                             <span class="badge bg-info text-dark">
+                                {{ $data->substitute_name }} ({{ $data->substitute_phone }})
+                             </span>
+                        @else --}}
+                            <span class="badge bg-secondary">-</span>
+                        {{-- @endif --}}
+                    </td>  
+                    <td>
+                        <?php 
+                           if(!empty($allguests)){
+                             foreach ($allguests as $guest) {
+                                if ($guest->member_id == $member->id){ ?>
+                                        <span class="badge bg-info text-dark">
+                                        {{ $guest->name }} ({{ $guest->phone }})
+                                        </span><br>
+                               <?php  }
+                             }
+                            }else{
+                                echo '<span class="badge bg-secondary">-</span>';
+                            }
+                            ?>       
+                    </td> 
                 </tr>
             @endforeach
 
@@ -171,8 +188,6 @@
             <a href="{{ route('admin-listing') }}" class="btn btn-outline-dark">View all members</a>
         @endif
     @endif
-    {{-- <a href="{{ route('members.add') }}" class="btn btn-primary">Add Member</a> --}}
-    {{-- <a href="{{ route('attending-listing') }}" class="btn btn-outline-dark">View member's Attendance</a> --}}
     <a href="{{ route('club-meeting-day', ['club_id' => Helper::encoded($selected_club->id)]) }}"
         class="btn btn-dark">Back</a>
     <a href="{{ route('member.logout') }}" class="btn btn-outline-danger">Log out</a>

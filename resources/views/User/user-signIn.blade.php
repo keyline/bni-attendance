@@ -47,19 +47,19 @@
             </div>
 
             {{-- Extra Buttons (Outside Form) --}}
-            <div class="text-center mt-4">
+            {{-- <div class="text-center mt-4"> --}}
                 {{-- Substitute Attendance --}}
-                <a href="{{ route('substitute-signin', ['club_id' => Helper::encoded($club->id)]) }}"
+                {{-- <a href="{{ route('substitute-signin', ['club_id' => Helper::encoded($club->id)]) }}"
                 class="btn btn-outline-success btn-lg mx-2 rounded-3 shadow-sm">
                     <i class="bi bi-person-plus-fill me-2"></i>Substitute Attendance
-                </a>
+                </a> --}}
 
                 {{-- Guest Attendance --}}
-                <a href="{{ route('guest-signin', ['club_id' => Helper::encoded($club->id)]) }}"
+                {{-- <a href="{{ route('guest-signin', ['club_id' => Helper::encoded($club->id)]) }}"
                 class="btn btn-outline-warning btn-lg mx-2 rounded-3 shadow-sm">
                     <i class="bi bi-person-fill-add me-2"></i>Guest Attendance
-                </a>
-            </div>
+                </a> --}}
+            {{-- </div> --}}
 
   </div>
 

@@ -27,6 +27,16 @@
 
                 <form action="{{ route('guest-signin', ['club_id' => Helper::encoded($club->id)]) }}" method="POST">
                     @csrf
+                    <div class="mb-3" id="memberNameDiv">
+                        <label for="memberName" class="form-label fw-semibold">Member Name</label>
+                        <select class="form-control" name="memberId" id="memberSelectInput">
+                            <option value="">Choose member name</option>
+                            <?php foreach($members as $member){ ?>
+                                <option value="{{ $member->id }}"> {{ $member->name}} </option>
+                                <?php } ?>
+                        </select>
+                        <div id="memberNameError" class="form-text text-danger"></div>
+                    </div>
                     <div class="mb-3">
                         <label for="guestName" class="form-label fw-semibold">Name</label>
                         <input type="text" id="guestName" name="guestName" placeholder="Enter your name"
@@ -40,7 +50,7 @@
                         <input type="text" id="guestPhone" name="guestPhone" pattern="\d{10}" maxlength="10"
                                 class="form-control form-control-lg shadow-sm"
                                 placeholder="Enter 10-digit phone number" required>
-                        <div id="guestPhoneError" class="form-text text-danger"></div>
+                        <div id="guestPhoneError" class="form-text text-danger"></div> 
                     </div>
                     {{-- <div class="mb-3">
                         <label for="phone" class="form-label fw-semibold">Member's Phone Number</label>

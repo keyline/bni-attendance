@@ -27,6 +27,7 @@ Route::match(['get', 'post'], '/admin/members/add/{club_id?}/{member_id?}', [Mem
 Route::match(['get', 'post'], '/admin/members/logout', [MemberController::class, 'logout'])->name('member.logout');
 
 //new route for BNI club ( club id is MQ%3D%3D )
+ Route::match(['get', 'post'], '/admin/index/BNI/{club_id}', [MemberController::class, 'index'])->name('index');
  Route::match(['get', 'post'], '/admin/user-signin/BNI/{club_id}', [MemberController::class, 'userSignIn'])->name('user-signin');
  Route::match(['get', 'post'], '/admin/substitute-signin/BNI/{club_id}', [MemberController::class, 'substituteSignIn'])->name('substitute-signin');
  Route::match(['get', 'post'], '/admin/guest-signin/BNI/{club_id}', [MemberController::class, 'guestSignIn'])->name('guest-signin');
