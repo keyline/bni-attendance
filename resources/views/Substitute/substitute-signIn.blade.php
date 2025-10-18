@@ -38,7 +38,7 @@
                         <div id="memberNameError" class="form-text text-danger"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="substituteName" class="form-label fw-semibold">Substitute Name</label>
+                        <label for="substituteName" class="form-label fw-semibold">Substitute's Name</label>
                         <input type="text" id="substituteName" name="substituteName" placeholder="Enter your name"
                             class="form-control" required>
                         <div id="substituteNameError" class="form-text text-danger"></div>
