@@ -23,7 +23,7 @@
         {{-- Attendance Form --}}
         <div class="card shadow-sm mx-auto" style="max-width: 500px;">
             <div class="card-body p-4">
-                <h3 class="text-center mb-4 fw-bold">Attendance of {{$club->club_name}} as Guest </h3>
+                <h3 class="text-center mb-4 fw-bold">Attendance of {{$club->club_name}} as Visitor </h3>
 
                 <form action="{{ route('guest-signin', ['club_id' => Helper::encoded($club->id)]) }}" method="POST">
                     @csrf
