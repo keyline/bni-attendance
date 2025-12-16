@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Helpers\Helper;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use App\Models\Member;
 
 class MemberController extends Controller
 {
@@ -105,8 +106,8 @@ class MemberController extends Controller
         if ($request->isMethod('post')) {
             $data = $request->validate([
                 'name'     => 'required|string',
-                'phone'    => 'required|numeric',
-                'email'    => 'required|email',
+                'phone' => ['required', 'regex:/^[6-9][0-9]{9}$/'],
+                'email' => ['nullable', 'regex:/^[\w\.\-]+@([\w\-]+\.)+[a-zA-Z]{2,}$/'],
                 'password' => 'nullable|string|min:3',
                 'user_type' => 'required|in:1,2', // 1 for admin, 2 for user
             ]);
@@ -118,6 +119,11 @@ class MemberController extends Controller
                 'club_id'     => $clubId ?? $admin->club_id,
                 'member_type' => $data['user_type'],
             ];
+
+            // $isExistsUser = DB::table('member')->where('phone', $data['phone'])->exists();
+            //  if($isExistsUser){
+            //     return back()->withErrors(['This phone number already registered !!'])->withInput();
+            //  }
 
             if (!empty($data['password'])) {
                 // $items['password'] = $data['password'];
@@ -144,8 +150,9 @@ class MemberController extends Controller
         }
      }catch (\Exception $e) {
 
-        echo "Error: " . $e->getMessage();
-        exit;
+        // echo "Error: " . $e->getMessage();
+        // exit;
+        return back()->with('error', $e->getMessage())->withInput();
               }
  
     }
@@ -190,7 +197,7 @@ class MemberController extends Controller
 
             if ($user) {
                  if($user->member_type == 3){
-                    return back()->withErrors(['This route not for super admin']);
+                    return back()->withErrors(['This route not for super admin'])->withInput();
                  }
                 session(['user' => $user]);
                 $meeting = DB::table('club')->where('id', '=', $user->club_id)->first();
@@ -202,7 +209,7 @@ class MemberController extends Controller
 
 
                         if ($alreadyExists) {
-                            return back()->withErrors(['You have already marked attendance today.']);
+                            return back()->withErrors(['You have already marked attendance today.'])->withInput();
                         }
                      $items = [
                          'member_id' => $user->id,
@@ -221,11 +228,11 @@ class MemberController extends Controller
                               ->with(['members' => $members, 'club' => $club,  'user' => $user])
                               ->with('success', 'Welcome ' . $user->name . ', your attendance has been marked successfully.');
                     }else{
-                        return back()->withErrors(['Today is not your meeting day.']);
+                        return back()->withErrors(['Today is not your meeting day.'])->withInput();
                     }
 
             }
-            return back()->withErrors(['Error!! Please call admin.']);
+            return back()->withErrors(['Error!! Please call admin.'])->withInput();
         }
         return view('User.user-signIn')->with('club', $club);
       
@@ -253,7 +260,7 @@ class MemberController extends Controller
 
             if ($user) {
                  if($user->member_type == 3){
-                    return back()->withErrors(['This route not for super admin']);
+                    return back()->withErrors(['This route not for super admin'])->withInput();
                  }
                 session(['user' => $user]);
                 $meeting = DB::table('club')->where('id', '=', $user->club_id)->first();
@@ -266,7 +273,7 @@ class MemberController extends Controller
 
 
                         if ($alreadyExists) {
-                            return back()->withErrors(['You have already marked attendance today.']);
+                            return back()->withErrors(['You have already marked attendance today.'])->withInput();
                         }
                      $items = [
                          'member_id' => $user->id,
@@ -288,11 +295,11 @@ class MemberController extends Controller
                               ->with(['members' => $members, 'club' => $club,  'user' => $user, 'substituteName' => $data['substituteName']])
                               ->with('success', 'Welcome ' . $data['substituteName'] . "( Substitute of " . $user->name . '), your attendance has been marked successfully.');
                     }else{
-                        return back()->withErrors(['Today is not your meeting day.']);
+                        return back()->withErrors(['Today is not your meeting day.'])->withInput();
                     }
 
             }
-            return back()->withErrors(['Error!! Please call admin.']);
+            return back()->withErrors(['Error!! Please call admin.'])->withInput();
         }
         return view('Substitute.substitute-signIn')->with('club', $club)->with('members', $members);
       
@@ -304,7 +311,7 @@ class MemberController extends Controller
         $rawClubId = $club_id ?? $request->input('club_id');
 
         if (empty($rawClubId)) {
-            return redirect()->back()->withErrors(['Club ID missing.']);
+            return redirect()->back()->withErrors(['Club ID missing.'])->withInput();
         }
 
         // 2) Decode if needed (allow numeric ids too)
@@ -315,14 +322,14 @@ class MemberController extends Controller
                 $clubId = Helper::decoded($rawClubId);
             }
         } catch (\Throwable $e) {
-            return redirect()->back()->withErrors(['Invalid club id.']);
+            return redirect()->back()->withErrors(['Invalid club id.'])->withInput();
         }
 
         // 3) Load club once and check
         $club = DB::table('club')->where('id', '=', $clubId)->first();
         $members = DB::table('member')->where('club_id', '=', $clubId)->get();
         if (! $club) {
-            return redirect()->back()->withErrors(['Club not found.']);
+            return redirect()->back()->withErrors(['Club not found.'])->withInput();
         }
 
         // 4) Handle POST
@@ -336,12 +343,12 @@ class MemberController extends Controller
             // If phone belongs to an existing member, block or handle accordingly
             $user = DB::table('member')->where('phone', $data['guestPhone'])->first();
             if ($user) {
-                return back()->withErrors(['This phone belongs to a registered member.']);
+                return back()->withErrors(['This phone belongs to a registered member.'])->withInput();
             }
 
             // Check meeting day
             if ($club->meeting_day !== date('l')) {
-                return back()->withErrors(['Today is not your meeting day.']);
+                return back()->withErrors(['Today is not your meeting day.'])->withInput();
             }
 
             // Prevent duplicate guest attendance
@@ -352,7 +359,7 @@ class MemberController extends Controller
                 ->exists();
 
             if ($alreadyExists) {
-                return back()->withErrors(['You have already marked attendance today.']);
+                return back()->withErrors(['You have already marked attendance today.'])->withInput();
             }
 
             DB::table('guest_attendance')->insert([
@@ -602,6 +609,17 @@ class MemberController extends Controller
         $members = DB::table('member')->where('club_id', $clubId)->get();
         return response()->json($members);
     }
+
+    public function destroy($id)
+    {
+        $member = Member::findOrFail($id);
+        $member->delete(); // ✅ SOFT DELETE
+
+        return redirect()
+            ->route('admin-listing')
+            ->with('success', 'Member deleted successfully');
+    }
+
 
       
 }

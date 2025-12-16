@@ -91,7 +91,7 @@
         <tbody>
             @php $i = 1; @endphp
             @foreach ($members as $member)
-                <tr>
+                <tr <?php if($member->deleted_at){echo 'style="background-color: #979a9e;"';}?> >
                     <td>{{ $i }}</td>
                     <td>{{ $member->name }} </td>
                     <td>
@@ -110,15 +110,26 @@
                     </td>
                     <td>{{ $member->email }}</td>
                     <td>{{ $member->phone }}</td>
+                    <?php if(!$member->deleted_at){ ?>
                     <td>
                         <a
                             href="{{ route('members.add', ['club_id' => Helper::encoded($club->id), 'member_id' => Helper::encoded($member->id)]) }}">Edit</a>
-                        <form action="" method="POST" style="display:inline;">
+                        {{-- <form action="" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">Delete</button>
+                        </form> --}}
+                        <form action="{{ route('admin.destroy', $member->id) }}"
+                            method="POST"
+                            onsubmit="return confirm('Are you sure you want to delete?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Delete
+                            </button>
                         </form>
                     </td>
+                    <?php }else{ echo "<td>Deleted</td>";} ?>
                 </tr>
                 @php $i++; @endphp
             @endforeach

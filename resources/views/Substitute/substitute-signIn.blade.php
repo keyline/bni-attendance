@@ -32,7 +32,7 @@
                         <select class="form-control" name="memberId" id="memberSelectInput">
                             <option value="">Choose member name</option>
                             <?php foreach($members as $member){ ?>
-                                <option value="{{ $member->id }}"> {{ $member->name}} </option>
+                                <option value="{{ $member->id }}" {{ old('memberId') == $member->id ? 'selected' : '' }} > {{ $member->name}} </option>
                                 <?php } ?>
                         </select>
                         <div id="memberNameError" class="form-text text-danger"></div>
@@ -40,13 +40,13 @@
                     <div class="mb-3">
                         <label for="substituteName" class="form-label fw-semibold">Substitute's Name</label>
                         <input type="text" id="substituteName" name="substituteName" placeholder="Enter your name"
-                            class="form-control" required>
+                            class="form-control" value="{{ old('substituteName') }}" required>
                         <div id="substituteNameError" class="form-text text-danger"></div>
                     </div>
                     <div class="mb-3">
                         <label for="phone" class="form-label fw-semibold">Substitute's Phone Number</label>
                         <input type="text" id="phone" name="substitutePhone" pattern="\d{10}" maxlength="10"
-                            class="form-control" placeholder="Enter 10-digit phone number" required>
+                            class="form-control" placeholder="Enter 10-digit phone number" value="{{ old('substitutePhone') }}" required>
                         <div id="phoneError" class="form-text text-danger"></div>
                     </div>
 

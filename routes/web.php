@@ -25,6 +25,7 @@ Route::match(['get', 'post'], '/admin/admin-listing', [MemberController::class, 
 Route::match(['get', 'post'], '/admin/user-listing', [MemberController::class, 'userProfile'])->name('user-listing');
 Route::match(['get', 'post'], '/admin/members/add/{club_id?}/{member_id?}', [MemberController::class, 'add'])->name('members.add');
 Route::match(['get', 'post'], '/admin/members/logout', [MemberController::class, 'logout'])->name('member.logout');
+Route::delete('/admin/admin-listing/{id}', [MemberController::class, 'destroy'])->name('admin.destroy');
 
 //new route for BNI club ( club id is MQ%3D%3D )
  Route::match(['get', 'post'], '/admin/index/BNI/{club_id}', [MemberController::class, 'index'])->name('index');

@@ -44,24 +44,18 @@
             </div>
             <div class="form-group">
                 <label for="name" class="form-label">Name:</label>
-                <input type="text" id="name" name="name" class="form-control" <?php if (isset($member)) {
-                    echo 'value="' . $member->name . '"';
-                } ?> required>
+                <input type="text" id="name" name="name" class="form-control" value="{{ old('name', $member->name ?? '') }}" required>
             </div>
 
             <div class="form-group">
                 <label for="email" class="form-label">Email:</label>
-                <input type="email" id="email" name="email" class="form-control" value="{{ $member->email ?? '' }}"
-                    required>
+                <input type="email" id="email" name="email" class="form-control" value="{{ old('email', $member->email ?? '') }}">
                 <small id="email-error" class="text-danger d-none">Email already exists</small>
             </div>
 
             <div class="form-group">
                 <label for="phone" class="form-label">Phone:</label>
-                <input type="text" id="phone" name="phone" class="form-control" <?php if (isset($member)) {
-                    echo 'value="' . $member->phone . '"';
-                } ?> maxlength="10"
-                    inputmode="numeric" required>
+                <input type="text" id="phone" name="phone" class="form-control"  maxlength="10" inputmode="numeric" value="{{ old('phone', $member->phone ?? '') }}" required>
                 <small id="phone-error" class="text-danger d-none">Phone already exists</small>
                 <small id="phone-invalid-msg" class="text-danger d-none">Phone number is invalid</small>
             </div>
@@ -110,7 +104,7 @@
                 </div>
             @endif
 
-            <button type="submit" class="mt-5 btn btn-primary submitBtn">Submit</button>
+            <button type="submit" class="mt-5 btn btn-primary submitBtn" >Submit</button>
         </form>
     </div>
     <a href="{{ route('admin-listing') }}" class="btn btn-dark" style="margin-left: 2rem;">Back</a>
@@ -151,64 +145,70 @@
     </script>
     <script>
         $(document).ready(function() {
-            $("#email").on("input", function() {
-                let email = $(this).val();
-                let memberId = $("#member_id").val();
-                let token = $("meta[name='csrf-token']").attr("content"); // include CSRF
-                console.log('Hello World!');
-                if (email.length > 0) {
-                    $.ajax({
-                        url: "{{ route('check.email') }}",
-                        type: "POST",
-                        data: {
-                            _token: token,
-                            email: email,
-                            member_id: memberId
-                        },
-                        success: function(response) {
-                            if (response.exists) {
-                                $("#email-error").removeClass("d-none");
-                                $("#email").addClass("is-invalid");
-                                setTimeout(() => {
-                                    $("#email").val('');
-                                }, 1000);
-                            } else {
-                                $("#email-error").addClass("d-none");
-                                $("#email").removeClass("is-invalid");
-                            }
-                        }
-                    });
-                }
-            });
-
-            $("#phone").on("input", function() {
+            $("#phone").on("input", function () {
                 let phone = $(this).val();
                 let memberId = $("#member_id").val();
-                let token = $("meta[name='csrf-token']").attr("content"); // include CSRF
-                console.log('Hello World!');
-                if (phone.length > 0) {
-                    $.ajax({
-                        url: "{{ route('check.phone') }}",
-                        type: "POST",
-                        data: {
-                            _token: token,
-                            phone: phone,
-                            member_id: memberId
-                        },
-                        success: function(response) {
-                            if (response.exists) {
-                                $("#phone-error").removeClass("d-none");
-                                $("#phone").addClass("is-invalid");
-                                setTimeout(() => {
-                                    $("#phone").val('');
-                                }, 1000);
-                            } else {
-                                $("#phone-error").addClass("d-none");
-                                $("#phone").removeClass("is-invalid");
-                            }
-                        }
-                    });
+                let token = $("meta[name='csrf-token']").attr("content");
+                let phoneRegex = /^[6-9][0-9]{9}$/;
+
+                if (!phoneRegex.test(phone)) {
+                    $("#phone-invalid-msg").removeClass("d-none");
+                    $("#phone").addClass("is-invalid");
+                    $('.submitBtn').prop("disabled", true);
+                    return;
+                } else {
+                    $("#phone-invalid-msg").addClass("d-none");
                 }
+
+                $.ajax({
+                    url: "{{ route('check.phone') }}",
+                    type: "POST",
+                    data: {
+                        _token: token,
+                        phone: phone,
+                        member_id: memberId
+                    },
+                    success: function (response) {
+                        if (response.exists) {
+                            $("#phone-error").removeClass("d-none");
+                            $("#phone").addClass("is-invalid");
+                            $('.submitBtn').prop("disabled", true);
+                        } else {
+                            $("#phone-error").addClass("d-none");
+                            $("#phone").removeClass("is-invalid");
+                            $('.submitBtn').prop("disabled", false);
+                        }
+                    }
+                });
+            });
+
+            $("#email").on("input", function () {
+                let email = $(this).val();
+                let memberId = $("#member_id").val();
+                let token = $("meta[name='csrf-token']").attr("content");
+
+                if (email.length === 0) return;
+
+                $.ajax({
+                    url: "{{ route('check.email') }}",
+                    type: "POST",
+                    data: {
+                        _token: token,
+                        email: email,
+                        member_id: memberId
+                    },
+                    success: function (response) {
+                        if (response.exists) {
+                            $("#email-error").removeClass("d-none");
+                            $("#email").addClass("is-invalid");
+                            $('.submitBtn').prop("disabled", true);
+                        } else {
+                            $("#email-error").addClass("d-none");
+                            $("#email").removeClass("is-invalid");
+                            $('.submitBtn').prop("disabled", false);
+                        }
+                    }
+                });
             });
         });
     </script>

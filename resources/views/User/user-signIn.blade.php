@@ -33,7 +33,7 @@
                             <label for="phone" class="form-label fw-semibold">Phone Number</label>
                             <input type="text" id="phone" name="phone" pattern="\d{10}" maxlength="10"
                                 class="form-control form-control-lg shadow-sm"
-                                placeholder="Enter 10-digit phone number" required>
+                               value="{{ old('phone') }}" placeholder="Mobile Number"  required>
                             <div id="phoneError" class="form-text text-danger small mt-1"></div>
                         </div>
 
